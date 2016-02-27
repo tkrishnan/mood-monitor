@@ -35322,7 +35322,6 @@
 	var RaisedButton = __webpack_require__(309);
 	var NavNext = __webpack_require__(315);
 
-	var Colors = __webpack_require__(262);
 	var ThemeManager = __webpack_require__(306);
 	var MyRawTheme = __webpack_require__(307);
 
@@ -35338,11 +35337,15 @@
 	    render: function render() {
 	        var styles = {
 	            labelStyle: {
+	                textAlign: 'center',
 	                fontSize: '3vw'
 	            },
 	            rootStyle: {
-	                minWidth: '40vw',
-	                height: '10vw'
+	                textAlign: 'center',
+	                width: '40%',
+	                height: '10vw',
+	                margin: 'auto',
+	                flex: '1 2 auto'
 	            }
 	        };
 	        return React.createElement(
@@ -35357,23 +35360,15 @@
 	                    'What is your level of depression today?'
 	                )
 	            ),
-	            React.createElement(
-	                'div',
-	                { id: 'next' },
-	                React.createElement(
-	                    RaisedButton,
-	                    {
-	                        linkButton: true,
-	                        containerElement: React.createElement(Link, { to: '/assessment/question1' }),
-	                        primary: true,
-	                        style: styles.rootStyle,
-	                        fullWidth: true,
-	                        label: 'Take the Survey',
-	                        labelStyle: styles.labelStyle,
-	                        labelPosition: 'after' },
-	                    React.createElement(NavNext, { color: Colors.grey100, viewBox: '-7 -7 25 25' })
-	                )
-	            ),
+	            React.createElement(RaisedButton, {
+	                linkButton: true,
+	                containerElement: React.createElement(Link, { to: '/assessment/question1' }),
+	                primary: true,
+	                style: styles.rootStyle,
+	                label: 'Take the Survey',
+	                labelStyle: styles.labelStyle,
+	                labelPosition: 'after',
+	                icon: React.createElement(NavNext, null) }),
 	            this.props.children
 	        );
 	    }
@@ -35416,7 +35411,7 @@
 
 
 	// module
-	exports.push([module.id, "/* Styling for AssessmentContent.js and the starting prompt of the assessment survey */\n\n#assessContent {\n    width: 100%;\n}\n\n#startQuest {\n    width: 60%;\n    margin: 0 auto;\n    padding: 15px;\n}\n\n#startQuest h1 {\n    text-align: center;\n    font-size: 10vw;\n    font-weight: 300;\n    color: #03a9f4;\n}\n\n#next {\n    width: 40%;\n    margin: 0 auto;\n}\n\n/* Styling for the Assessment Survey questions */\n\n.questionText {\n    width: 80%;\n    height: 300px;\n    line-height: 300px;\n    margin: 0 auto;\n}\n\n.questionText h2 {\n    text-align: center;\n    font-size: 6vw;\n    font-weight: 400;\n    color: #03a9f4/*#00838f*/;\n}\n\n.questionText h2 span {\n    display: inline-block;\n    vertical-align: middle;\n    line-height: normal;\n}\n\n#yesBttn {\n    float: left;  \n}\n\n#noBttn {\n    float: right;\n}\n\n#lastQuestion {\n    width: 100%;\n}\n\n#sliderLabel {\n    width: 80%;\n    margin: 0 auto;\n}\n\n#sliderLabel #min {\n    margin: 0 auto;\n    float: left;\n    font-size: 2.7vw;\n    font-weight: 700;\n    color: #00838F;\n}\n\n#sliderLabel #max {\n    margin: 0 auto;\n    float: right;\n    font-size: 2.8vw;\n    font-weight: 700;\n    color: #00838F;\n}\n\n#sliderCont {\n    width: 80%;\n    margin: 0 auto;\n}\n\n#submitAssess {\n    width: 20%;\n    margin: 0 auto;\n}\n\n/* Styling for Assessment Results */\n\n#assessResults h3 {\n    text-align: center;\n    font-weight: 500;\n    color: #00838F;\n}\n\n#assessResults h1 {\n    margin-bottom: 50px;\n    text-align: center;\n    font-weight: 300;\n    font-size: 7.5vw;\n    color: #03a9f4;\n}\n\n#resultBttns {\n    width: 90%;\n    margin: auto;\n}\n\n#resultBttns .resBttn {\n    width: 100%;\n    height: 17vw;\n    line-height: 17vw;\n}", ""]);
+	exports.push([module.id, "/* Styling for AssessmentContent.js and the starting prompt of the assessment survey */\n\n#assessContent {\n    width: 100%;\n    display: flex;\n    flex-direction: column;\n}\n\n#startQuest {\n    width: 60%;\n    margin: auto;\n    margin-top: 5vw;\n    margin-bottom: 5vw;\n    flex: 1 1 auto;\n}\n\n#startQuest h1 {\n    text-align: center;\n    font-size: 10vw;\n    font-weight: 300;\n    color: #03a9f4;\n}\n\n/* Styling for the Assessment Survey questions */\n\n.questionText {\n    flex: 1 1 auto;\n    width: 80%;\n    height: 30vw;\n    line-height: 30vw;\n    margin: auto;\n    margin-top: 5vw;\n}\n\n.questionText h2 {\n    text-align: center;\n    font-size: 6vw;\n    font-weight: 400;\n    color: #03a9f4/*#00838f*/;\n}\n\n.questionText h2 span {\n    display: inline-block;\n    vertical-align: middle;\n    line-height: normal;\n}\n\n.bttn {\n    width: 80%;\n    margin: auto;\n    flex: 1 1 auto;\n    margin-top: 30vw;\n}\n\n.yesBttn {\n    float: left;  \n}\n\n.noBttn {\n    float: right;\n}\n\n#slider {\n    flex: 1 1 auto;\n    margin-top: 25vw;\n}\n\n#sliderLabel {\n    width: 80%;\n    margin: 0 auto;\n}\n\n#sliderLabel #min {\n    margin: 0 auto;\n    float: left;\n    font-size: 2.8vw;\n    font-weight: 700;\n    color: #00838F;\n}\n\n#sliderLabel #max {\n    margin: 0 auto;\n    float: right;\n    font-size: 2.8vw;\n    font-weight: 700;\n    color: #00838F;\n}\n\n#sliderCont {\n    width: 80%;\n    margin: 0 auto;\n}\n\n/* Styling for Assessment Results */\n#assessResults {\n    display: flex;\n    flex-direction: column;\n    width: 100%;\n}\n\n#result {\n    flex: 1 1 auto;\n    margin-bottom: 20vw;\n    width: 90%;\n    margin: auto;\n}\n\n#result h3 {\n    text-align: center;\n    font-weight: 500;\n    color: #00838F;\n}\n\n#result h1 {\n    text-align: center;\n    font-weight: 300;\n    font-size: 7.5vw;\n    color: #03a9f4;\n}\n\n#resultBttns {\n    flex: 1 1 auto;\n    width: 90%;\n    margin: auto;\n    margin-top: 5vw;\n}\n\n#resultBttns .resBttn {\n    width: 100%;\n    height: 17vw;\n    line-height: 17vw;\n}", ""]);
 
 	// exports
 
@@ -35503,14 +35498,18 @@
 	      'div',
 	      { id: 'assessResults' },
 	      React.createElement(
-	        'h3',
-	        null,
-	        'Your symptoms today indicate:'
-	      ),
-	      React.createElement(
-	        'h1',
-	        null,
-	        'Moderately Severe Depression'
+	        'div',
+	        { id: 'result' },
+	        React.createElement(
+	          'h3',
+	          null,
+	          'Your symptoms today indicate:'
+	        ),
+	        React.createElement(
+	          'h1',
+	          null,
+	          'Moderately Severe Depression'
+	        )
 	      ),
 	      React.createElement(
 	        'div',
@@ -50097,11 +50096,7 @@
 	    var styles = {
 	      form: {
 	        display: 'flex',
-	        flexDirection: 'column',
-	        width: '70%',
-	        margin: 'auto',
-	        marginLeft: 'auto',
-	        marginRight: 'auto'
+	        flexDirection: 'column'
 	      },
 	      textField: {
 	        flex: '1 1 auto'
@@ -50141,14 +50136,18 @@
 	        )
 	      ),
 	      React.createElement(
-	        Form,
-	        { onValidSubmit: this.handleSubmitForm, style: styles.form, onValid: this.enableButton, onInvalid: this.disableButton },
-	        React.createElement(FormsyText, { name: 'firstName', hintText: 'Please enter your first name', floatingLabelText: 'First Name', validations: 'isWords', validationError: this.errorMessages.isWords, style: styles.textField, required: true }),
-	        React.createElement(FormsyText, { name: 'lastName', hintText: 'Please enter your last name', floatingLabelText: 'Last Name', validations: 'isWords', validationError: this.errorMessages.isWords, style: styles.textField, required: true }),
-	        React.createElement(FormsyText, { name: 'email', hintText: 'Please enter an email address', floatingLabelText: 'Email', validations: 'isEmail', validationError: this.errorMessages.isEmail, style: styles.textField, required: true }),
-	        React.createElement(FormsyText, { name: 'password', hintText: 'Please enter a password', floatingLabelText: 'Password', type: 'password', validations: 'minLength:8,maxLength:25', validationError: this.errorMessages.isPassword, style: styles.textField, required: true }),
-	        React.createElement(FormsyText, { name: 'passwordAgain', hintText: 'Please re-type the above password', floatingLabelText: 'Re-Type Password', type: 'password', validations: 'equalsField:password', validationError: this.errorMessages.isPasswordAgain, style: styles.textField, required: true }),
-	        React.createElement(RaisedButton, { type: 'submit', label: 'Create Account', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
+	        'div',
+	        { className: 'formContainer' },
+	        React.createElement(
+	          Form,
+	          { onValidSubmit: this.handleSubmitForm, style: styles.form, onValid: this.enableButton, onInvalid: this.disableButton },
+	          React.createElement(FormsyText, { name: 'firstName', hintText: 'Please enter your first name', floatingLabelText: 'First Name', validations: 'isWords', validationError: this.errorMessages.isWords, style: styles.textField, required: true }),
+	          React.createElement(FormsyText, { name: 'lastName', hintText: 'Please enter your last name', floatingLabelText: 'Last Name', validations: 'isWords', validationError: this.errorMessages.isWords, style: styles.textField, required: true }),
+	          React.createElement(FormsyText, { name: 'email', hintText: 'Please enter an email address', floatingLabelText: 'Email', validations: 'isEmail', validationError: this.errorMessages.isEmail, style: styles.textField, required: true }),
+	          React.createElement(FormsyText, { name: 'password', hintText: 'Please enter a password', floatingLabelText: 'Password', type: 'password', validations: 'minLength:8,maxLength:25', validationError: this.errorMessages.isPassword, style: styles.textField, required: true }),
+	          React.createElement(FormsyText, { name: 'passwordAgain', hintText: 'Please re-type the above password', floatingLabelText: 'Re-Type Password', type: 'password', validations: 'equalsField:password', validationError: this.errorMessages.isPasswordAgain, style: styles.textField, required: true }),
+	          React.createElement(RaisedButton, { type: 'submit', label: 'Create Account', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
+	        )
 	      )
 	    );
 	  }
@@ -52375,7 +52374,7 @@
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,300italic,400italic,500italic,700italic);", ""]);
 
 	// module
-	exports.push([module.id, "/* Styling for Landing Component */\n\nbody {\n    font-family: 'Roboto', sans-serif;\n    margin: 0px;\n    background-color: #e0e0e0; /*#b2ebf2*/\n}\n\n.app_title {\n  width: 80%;\n  margin: 0 auto;\n}\n\n.app_title h1 {\n  text-align: center;\n  font-weight: 300;\n  font-size: 12vw;\n  color: #5c6bc0;\n  margin-top: 8vw;\n  margin-bottom: 3vw;\n}\n\n.err_mssg {\n  width: 80%;\n  margin: auto;\n  text-align: center;\n}\n\n.err_mssg span {\n  font-weight: 400;\n  font-size: 3vw;\n  color: #ff1744;\n}\n\n/* Styling for Create Account Component */\n\n#createAccount {\n  width: 100%;\n}\n\n/* Styling for Sign In Component */\n\n#signIn {\n  width: 100%;\n}", ""]);
+	exports.push([module.id, "/* Styling for Landing Component */\n\nbody {\n    font-family: 'Roboto', sans-serif;\n    margin: 0px;\n    background-color: #e0e0e0; /*#b2ebf2*/\n}\n\n.app_title {\n  width: 80%;\n  margin: 0 auto;\n}\n\n.app_title h1 {\n  text-align: center;\n  font-weight: 300;\n  font-size: 12vw;\n  color: #5c6bc0;\n  margin-top: 8vw;\n  margin-bottom: 3vw;\n}\n\n.formContainer {\n  width: 70%;\n  margin: auto;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.formContainer form input:-webkit-autofill,\n.formContainer form input:-webkit-autofill:hover,\n.formContainer form input:-webkit-autofill:focus,\n.formContainer form input:-webkit-autofill:active { \n  transition: background-color 5000s ease-in-out 0s;\n  -webkit-text-fill-color: #1a237e !important;\n}\n\n.formContainer form input:-moz-autofill,\n.formContainer form input:-moz-autofill:hover,\n.formContainer form input:-moz-autofill:focus,\n.formContainer form input:-moz-autofill:active { \n  transition: background-color 5000s ease-in-out 0s;\n  -moz-text-fill-color: #1a237e !important;\n}\n\n.err_mssg {\n  width: 80%;\n  margin: auto;\n  text-align: center;\n}\n\n.err_mssg span {\n  font-weight: 400;\n  font-size: 3vw;\n  color: #ff1744;\n}\n\n/* Styling for Create Account Component */\n\n#createAccount {\n  width: 100%;\n}\n\n/* Styling for Sign In Component */\n\n#signIn {\n  width: 100%;\n}", ""]);
 
 	// exports
 
@@ -52430,18 +52429,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -52462,25 +52457,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question2' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question2' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question2' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question2' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -52513,18 +52512,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -52545,25 +52540,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question3' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question3' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question3' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question3' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -52596,18 +52595,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -52628,25 +52623,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question4' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question4' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question4' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question4' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -52679,18 +52678,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -52711,25 +52706,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question5' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question5' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question5' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question5' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -52762,18 +52761,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -52794,25 +52789,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question6' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question6' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question6' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question6' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -52845,18 +52844,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -52877,25 +52872,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question7' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question7' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question7' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question7' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -52928,18 +52927,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -52960,25 +52955,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question8' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question8' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question8' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question8' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -53011,18 +53010,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -53043,25 +53038,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question9' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question9' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question9' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question9' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -53094,18 +53093,14 @@
 	  },
 	  render: function render() {
 	    var style = {
-	      root1Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginLeft: '50px'
-	      },
-	      root2Style: {
-	        height: '10vw',
-	        marginTop: '40px',
-	        marginRight: '50px'
+	      rootStyle: {
+	        height: '13vw',
+	        lineHeight: '13vw',
+	        textAlign: 'center'
 	      },
 	      labelStyle: {
-	        fontSize: '7vw'
+	        fontSize: '7vw',
+	        textAlign: 'center'
 	      }
 	    };
 	    return React.createElement(
@@ -53126,25 +53121,29 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { id: 'yesBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question10' }),
-	          label: 'YES',
-	          labelStyle: style.labelStyle,
-	          style: style.root1Style,
-	          primary: true })
-	      ),
-	      React.createElement(
-	        'div',
-	        { id: 'noBttn' },
-	        React.createElement(FlatButton, {
-	          linkButton: true,
-	          containerElement: React.createElement(Link, { to: '/assessment/question10' }),
-	          label: 'NO',
-	          labelStyle: style.labelStyle,
-	          style: style.root2Style,
-	          secondary: true })
+	        { className: 'bttn' },
+	        React.createElement(
+	          'div',
+	          { className: 'yesBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question10' }),
+	            label: 'YES',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            primary: true })
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'noBttn' },
+	          React.createElement(FlatButton, {
+	            linkButton: true,
+	            containerElement: React.createElement(Link, { to: '/assessment/question10' }),
+	            label: 'NO',
+	            labelStyle: style.labelStyle,
+	            style: style.rootStyle,
+	            secondary: true })
+	        )
 	      ),
 	      this.props.children
 	    );
@@ -53179,14 +53178,19 @@
 	  render: function render() {
 	    var style = {
 	      labelStyle: {
-	        fontSize: '3.5vw'
+	        fontSize: '3.5vw',
+	        textAlign: 'center'
 	      },
 	      rootStyle: {
-	        minWidth: '20vw',
-	        height: '10vw'
+	        flex: '1 1 auto',
+	        width: '20%',
+	        margin: 'auto',
+	        height: '10vw',
+	        lineHeight: '10vw',
+	        textAlign: 'center'
 	      },
 	      sliderStyle: {
-	        marginTop: '35px'
+	        marginTop: '7vw'
 	      }
 	    };
 	    return React.createElement(
@@ -53194,20 +53198,20 @@
 	      { id: 'assessContent' },
 	      React.createElement(
 	        'div',
-	        { id: 'lastQuestion' },
+	        { className: 'questionText' },
 	        React.createElement(
-	          'div',
-	          { className: 'questionText' },
+	          'h2',
+	          null,
 	          React.createElement(
-	            'h2',
+	            'span',
 	            null,
-	            React.createElement(
-	              'span',
-	              null,
-	              'If you said yes to any of these problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?'
-	            )
+	            'If you said yes to any of these problems, how difficult have these problems made it for you to do your work, take care of things at home, or get along with other people?'
 	          )
-	        ),
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { id: 'slider' },
 	        React.createElement(
 	          'div',
 	          { id: 'sliderLabel' },
@@ -53226,20 +53230,15 @@
 	          'div',
 	          { id: 'sliderCont' },
 	          React.createElement(Slider, { step: 1 / 3, style: style.sliderStyle })
-	        ),
-	        React.createElement(
-	          'div',
-	          { id: 'submitAssess' },
-	          React.createElement(RaisedButton, {
-	            linkButton: true,
-	            containerElement: React.createElement(Link, { to: '/assessmentResults' }),
-	            primary: true,
-	            style: style.rootStyle,
-	            label: 'Submit',
-	            labelStyle: style.labelStyle,
-	            fullWidth: true })
 	        )
 	      ),
+	      React.createElement(RaisedButton, {
+	        linkButton: true,
+	        containerElement: React.createElement(Link, { to: '/assessmentResults' }),
+	        primary: true,
+	        style: style.rootStyle,
+	        label: 'Submit',
+	        labelStyle: style.labelStyle }),
 	      this.props.children
 	    );
 	  }
@@ -53896,11 +53895,7 @@
 	    var styles = {
 	      form: {
 	        display: 'flex',
-	        flexDirection: 'column',
-	        width: '70%',
-	        margin: 'auto',
-	        marginLeft: 'auto',
-	        marginRight: 'auto'
+	        flexDirection: 'column'
 	      },
 	      textField: {
 	        flex: '1 1 auto'
@@ -53940,11 +53935,15 @@
 	        )
 	      ),
 	      React.createElement(
-	        Form,
-	        { onValidSubmit: this.handleSubmitForm, onValid: this.enableButton, onInvalid: this.disableButton, style: styles.form },
-	        React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', style: styles.textField, required: true }),
-	        React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', style: styles.textField, required: true }),
-	        React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
+	        'div',
+	        { className: 'formContainer' },
+	        React.createElement(
+	          Form,
+	          { onValidSubmit: this.handleSubmitForm, onValid: this.enableButton, onInvalid: this.disableButton, style: styles.form },
+	          React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', style: styles.textField, required: true }),
+	          React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', style: styles.textField, required: true }),
+	          React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
+	        )
 	      )
 	    );
 	  }

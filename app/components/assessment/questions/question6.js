@@ -17,18 +17,14 @@ var QuestionSix = React.createClass({
   },
   render: function() {
     var style = {
-      root1Style: {
-        height: '10vw',
-        marginTop: '40px',
-        marginLeft: '50px'  
-      },
-      root2Style: {
-        height: '10vw',
-        marginTop: '40px',
-        marginRight: '50px'
+      rootStyle: {
+        height: '13vw',
+        lineHeight: '13vw',
+        textAlign: 'center'
       },
       labelStyle: {
-        fontSize: '7vw'
+        fontSize: '7vw',
+        textAlign: 'center'
       }
     };
     return (
@@ -38,23 +34,25 @@ var QuestionSix = React.createClass({
             <span>Are you feeling bad about yourself-- or that you are a failure or have let yourself or your family down?</span>
           </h2>
         </div>
-        <div id="yesBttn">
-          <FlatButton
-          linkButton={true}
-          containerElement={<Link to='/assessment/question7'/>}
-          label="YES" 
-          labelStyle={style.labelStyle} 
-          style={style.root1Style} 
-          primary={true}/>
-        </div>
-        <div id="noBttn">
-          <FlatButton 
-          linkButton={true}
-          containerElement={<Link to='/assessment/question7'/>}
-          label="NO" 
-          labelStyle={style.labelStyle} 
-          style={style.root2Style} 
-          secondary={true}/>
+        <div className="bttn">
+          <div className="yesBttn">
+            <FlatButton
+            linkButton={true}
+            containerElement={<Link to='/assessment/question7'/>}
+            label="YES" 
+            labelStyle={style.labelStyle} 
+            style={style.rootStyle} 
+            primary={true}/>
+          </div>
+          <div className="noBttn">
+            <FlatButton 
+            linkButton={true}
+            containerElement={<Link to='/assessment/question7'/>}
+            label="NO" 
+            labelStyle={style.labelStyle} 
+            style={style.rootStyle} 
+            secondary={true}/>
+          </div>
         </div>
         {this.props.children}
       </div>

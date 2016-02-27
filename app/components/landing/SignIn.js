@@ -54,10 +54,6 @@ var SignIn = React.createClass({
       form: {
         display: 'flex',
         flexDirection: 'column',
-        width: '70%',
-        margin: 'auto',
-        marginLeft: 'auto',
-        marginRight: 'auto',
       },
       textField: {
         flex: '1 1 auto'
@@ -79,11 +75,13 @@ var SignIn = React.createClass({
       <div id="signIn">
         <div className="app_title"><h1>Mood Monitor</h1></div>
         <div className="err_mssg"><span>{this.state.errorMessage}</span></div>
-        <Form onValidSubmit={this.handleSubmitForm} onValid={this.enableButton} onInvalid={this.disableButton} style={styles.form}>
-          <FormsyText name="email" hintText="Please enter your email" floatingLabelText="Email" style={styles.textField} required/>
-          <FormsyText name="password" hintText="Please enter your password" floatingLabelText="Password" type="password" style={styles.textField} required/>
-          <RaisedButton className="submitBttn" type="submit" label="Submit" labelStyle={styles.labelStyle} primary={true} style={styles.submitBttn} disabled={!this.state.canSubmit}/>
-        </Form>
+        <div className="formContainer">
+          <Form onValidSubmit={this.handleSubmitForm} onValid={this.enableButton} onInvalid={this.disableButton} style={styles.form}>
+            <FormsyText name="email" hintText="Please enter your email" floatingLabelText="Email" style={styles.textField} required/>
+            <FormsyText name="password" hintText="Please enter your password" floatingLabelText="Password" type="password" style={styles.textField} required/>
+            <RaisedButton className="submitBttn" type="submit" label="Submit" labelStyle={styles.labelStyle} primary={true} style={styles.submitBttn} disabled={!this.state.canSubmit}/>
+          </Form>
+        </div>
       </div>
     );
   }

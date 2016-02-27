@@ -32,8 +32,10 @@ var AssessmentResults = React.createClass({
     }
     return (
       <div id="assessResults">
-        <h3>Your symptoms today indicate:</h3>
-        <h1>Moderately Severe Depression</h1>
+        <div id="result">
+          <h3>Your symptoms today indicate:</h3>
+          <h1>Moderately Severe Depression</h1>
+        </div>
         <div id="resultBttns">
           <FlatButton className="resBttn" label="RETAKE" labelPosition="after" labelStyle={styles.labelStyle} fullWidth={true} onTouchTap={this.handleRedo}>
             <Redo />
