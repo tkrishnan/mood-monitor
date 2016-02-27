@@ -19,7 +19,6 @@ var AccountContent = React.createClass({
         return {muiTheme: ThemeManager.getMuiTheme(MyRawTheme)};
     },
     handleSignOut: function() {
-        console.log("I PRESSED BTTN");
         firebaseUtil.signOut(function() {
             console.log("You are now signed out"); 
         });

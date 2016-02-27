@@ -24,7 +24,8 @@ var CreateAccount = React.createClass({
   getInitialState: function() {
     return {
       muiTheme: this.context.muiTheme,
-      canSubmit: false
+      canSubmit: false,
+      errorMessage: ""
     };
   },
   enableButton: function() {
@@ -38,8 +39,11 @@ var CreateAccount = React.createClass({
     });
   },
   handleSubmitForm: function(model) {
-    firebaseUtil.createUser(model, function(result) {
-      if (result) {
+    firebaseUtil.createUser(model, function(err, result) {
+      if (err) {
+        this.setState({errorMessage: err})
+      } else if (result) {
+        this.setState({errorMessage: ""})
         this.history.pushState(null, '/dashboard');
       }
     }.bind(this));
@@ -53,27 +57,40 @@ var CreateAccount = React.createClass({
   render: function() {
     var styles = {
       form: {
+        display: 'flex',
+        flexDirection: 'column',
         width: '70%',
         margin: 'auto',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      },
+      textField: {
+        flex: '1 1 auto'
       },
       submitBttn: {
-        width: '80%',
+        flex: '1 1 auto',
+        width: '70%',
+        height: '10vw',
         margin: 'auto',
         marginLeft: 'auto',
         marginRight: 'auto',
         marginTop: '5vw',
+      },
+      labelStyle: {
+        fontSize: '4vw'
       }
     };
     return (
       <div id="createAccount">
         <div className="app_title"><h1>Mood Monitor</h1></div>
-        <Form onSubmit={this.handleSubmitForm} style={styles.form}>
-          <FormsyText name="firstName" hintText="Please enter your first name" floatingLabelText="First Name" validations="isWords" validationError={this.errorMessages.isWords} required/>
-          <FormsyText name="lastName" hintText="Please enter your last name" floatingLabelText="Last Name" validations="isWords" validationError={this.errorMessages.isWords} required/>
-          <FormsyText name="email" hintText="Please enter an email address" floatingLabelText="Email" validations="isEmail" validationError={this.errorMessages.isEmail} required/>
-          <FormsyText name="password" hintText="Please enter a password" floatingLabelText="Password" type="password" validations="minLength:8,maxLength:25" validationError={this.errorMessages.isPassword} required/>
-          <FormsyText name="passwordAgain" hintText="Please re-type the above password" floatingLabelText="Re-Type Password" type="password" validations="equalsField:password" validationError={this.errorMessages.isPasswordAgain} required/>
-          <RaisedButton type="submit" label="Create Account" primary={true} style={styles.submitBttn}/>
+        <div className="err_mssg"><span>{this.state.errorMessage}</span></div>
+        <Form onValidSubmit={this.handleSubmitForm} style={styles.form} onValid={this.enableButton} onInvalid={this.disableButton}>
+          <FormsyText name="firstName" hintText="Please enter your first name" floatingLabelText="First Name" validations="isWords" validationError={this.errorMessages.isWords} style={styles.textField} required/>
+          <FormsyText name="lastName" hintText="Please enter your last name" floatingLabelText="Last Name" validations="isWords" validationError={this.errorMessages.isWords} style={styles.textField} required/>
+          <FormsyText name="email" hintText="Please enter an email address" floatingLabelText="Email" validations="isEmail" validationError={this.errorMessages.isEmail} style={styles.textField} required/>
+          <FormsyText name="password" hintText="Please enter a password" floatingLabelText="Password" type="password" validations="minLength:8,maxLength:25" validationError={this.errorMessages.isPassword} style={styles.textField} required/>
+          <FormsyText name="passwordAgain" hintText="Please re-type the above password" floatingLabelText="Re-Type Password" type="password" validations="equalsField:password" validationError={this.errorMessages.isPasswordAgain} style={styles.textField} required/>
+          <RaisedButton type="submit" label="Create Account" labelStyle={styles.labelStyle} primary={true} style={styles.submitBttn} disabled={!this.state.canSubmit}/>
         </Form>
       </div>
     );

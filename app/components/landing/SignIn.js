@@ -25,7 +25,8 @@ var SignIn = React.createClass({
     return {
       muiTheme: this.context.muiTheme,
       canSubmit: false,
-      loggedIn: false
+      loggedIn: false,
+      errorMessage: ""
     };
   },
   enableButton: function() {
@@ -39,8 +40,11 @@ var SignIn = React.createClass({
     });
   },
   handleSubmitForm: function(model) {
-    firebaseUtil.signInUser(model, function(result) {
-      if (result) {
+    firebaseUtil.signInUser(model, function(err, result) {
+      if (err) {
+        this.setState({errorMessage: err});
+      } else if (result) {
+        this.setState({errorMessage: err});
         this.history.pushState(null, '/dashboard');
       }
     }.bind(this));
@@ -48,24 +52,37 @@ var SignIn = React.createClass({
   render: function() {
     var styles = {
       form: {
+        display: 'flex',
+        flexDirection: 'column',
         width: '70%',
         margin: 'auto',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      },
+      textField: {
+        flex: '1 1 auto'
       },
       submitBttn: {
-        width: '80%',
+        flex: '1 1 auto',
+        width: '70%',
+        height: '10vw',
         margin: 'auto',
         marginLeft: 'auto',
         marginRight: 'auto',
         marginTop: '10vw'
+      },
+      labelStyle: {
+        fontSize: '4vw'
       }
     };
     return(
       <div id="signIn">
         <div className="app_title"><h1>Mood Monitor</h1></div>
-        <Form onSubmit={this.handleSubmitForm} style={styles.form}>
-          <FormsyText name="email" hintText="Please enter your email" floatingLabelText="Email" required/>
-          <FormsyText name="password" hintText="Please enter your password" floatingLabelText="Password" type="password" required/>
-          <RaisedButton className="submitBttn" type="submit" label="Submit" primary={true} style={styles.submitBttn}/>
+        <div className="err_mssg"><span>{this.state.errorMessage}</span></div>
+        <Form onValidSubmit={this.handleSubmitForm} onValid={this.enableButton} onInvalid={this.disableButton} style={styles.form}>
+          <FormsyText name="email" hintText="Please enter your email" floatingLabelText="Email" style={styles.textField} required/>
+          <FormsyText name="password" hintText="Please enter your password" floatingLabelText="Password" type="password" style={styles.textField} required/>
+          <RaisedButton className="submitBttn" type="submit" label="Submit" labelStyle={styles.labelStyle} primary={true} style={styles.submitBttn} disabled={!this.state.canSubmit}/>
         </Form>
       </div>
     );

@@ -18,6 +18,20 @@ body {
   font-weight: 300;
   font-size: 12vw;
   color: #5c6bc0;
+  margin-top: 8vw;
+  margin-bottom: 3vw;
+}
+
+.err_mssg {
+  width: 80%;
+  margin: auto;
+  text-align: center;
+}
+
+.err_mssg span {
+  font-weight: 400;
+  font-size: 3vw;
+  color: #ff1744;
 }
 
 /* Styling for Create Account Component */

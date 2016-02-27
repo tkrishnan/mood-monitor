@@ -13,22 +13,27 @@ var firebaseUtil = {
       if (err) {
         switch(err.code) {
           case 'EMAIL_TAKEN':
-            console.log("This email has been taken");
+            console.log("The new user account cannot be created because the email is already in use.");
+            callback("The new user account cannot be created because the email is already in use.", false);
             break;
           case 'INVALID_EMAIL':
-            console.log("This email is invalid");
+            console.log("Error creating user: the specified email address is invalid.");
+            callback("The specified email address is invalid.", false);
             break;
           default:
-            console.log("Error creating user:", err.message);
+            callback(err.message, false);
         }
       } else {
-        this.signInUser(newUserData, function(authData) {
+        this.signInUser(newUserData, function(err = null, authData) {
           addNewUserToDB({
-            email: newUserData.email,
             uid: authData.uid,
-            token: authData.token
+            email: newUserData.email,
+            token: authData.token,
+            firstName: newUserData.firstName,
+            lastName: newUserData.lastName
           });
         }, callback);
+        console.log("Successfully created user with payload:", newUserData);
       }
     }.bind(this));
   },
@@ -36,12 +41,13 @@ var firebaseUtil = {
     ref.authWithPassword({email: userData.email, password: userData.password}, function(err, authData) {
       if (err) {
         console.log("Error signing in user:", err.message);
-        callbackCreateUser && callbackCreateUser(false); 
+        callback(err.message, null);
+        callbackCreateUser && callbackCreateUser(err.message, false); 
       } else {
         authData.email = userData.email;
         cachedUser = authData;
-        callback(authData);
-        callbackCreateUser && callbackCreateUser(true);
+        callback(null, authData);
+        callbackCreateUser && callbackCreateUser(false, true);
         console.log("Successfully signed in user with payload:", authData);
       }
     }.bind(this));
@@ -49,6 +55,7 @@ var firebaseUtil = {
   signOut: function(callback) {
     ref.unauth();
     cachedUser = null;
+    console.log("Successfully signed out user");
     callback();
   },
   isSignedIn: function() {

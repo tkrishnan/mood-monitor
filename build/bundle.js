@@ -34467,7 +34467,6 @@
 	        return { muiTheme: ThemeManager.getMuiTheme(MyRawTheme) };
 	    },
 	    handleSignOut: function handleSignOut() {
-	        console.log("I PRESSED BTTN");
 	        firebaseUtil.signOut(function () {
 	            console.log("You are now signed out");
 	        });
@@ -34968,22 +34967,30 @@
 	      if (err) {
 	        switch (err.code) {
 	          case 'EMAIL_TAKEN':
-	            console.log("This email has been taken");
+	            console.log("The new user account cannot be created because the email is already in use.");
+	            callback("The new user account cannot be created because the email is already in use.", false);
 	            break;
 	          case 'INVALID_EMAIL':
-	            console.log("This email is invalid");
+	            console.log("Error creating user: the specified email address is invalid.");
+	            callback("The specified email address is invalid.", false);
 	            break;
 	          default:
-	            console.log("Error creating user:", err.message);
+	            callback(err.message, false);
 	        }
 	      } else {
-	        this.signInUser(newUserData, function (authData) {
+	        this.signInUser(newUserData, function () {
+	          var err = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+	          var authData = arguments[1];
+
 	          addNewUserToDB({
-	            email: newUserData.email,
 	            uid: authData.uid,
-	            token: authData.token
+	            email: newUserData.email,
+	            token: authData.token,
+	            firstName: newUserData.firstName,
+	            lastName: newUserData.lastName
 	          });
 	        }, callback);
+	        console.log("Successfully created user with payload:", newUserData);
 	      }
 	    }.bind(this));
 	  },
@@ -34991,12 +34998,13 @@
 	    ref.authWithPassword({ email: userData.email, password: userData.password }, function (err, authData) {
 	      if (err) {
 	        console.log("Error signing in user:", err.message);
-	        callbackCreateUser && callbackCreateUser(false);
+	        callback(err.message, null);
+	        callbackCreateUser && callbackCreateUser(err.message, false);
 	      } else {
 	        authData.email = userData.email;
 	        cachedUser = authData;
-	        callback(authData);
-	        callbackCreateUser && callbackCreateUser(true);
+	        callback(null, authData);
+	        callbackCreateUser && callbackCreateUser(false, true);
 	        console.log("Successfully signed in user with payload:", authData);
 	      }
 	    }.bind(this));
@@ -35004,6 +35012,7 @@
 	  signOut: function signOut(callback) {
 	    ref.unauth();
 	    cachedUser = null;
+	    console.log("Successfully signed out user");
 	    callback();
 	  },
 	  isSignedIn: function isSignedIn() {
@@ -50054,7 +50063,8 @@
 	  getInitialState: function getInitialState() {
 	    return {
 	      muiTheme: this.context.muiTheme,
-	      canSubmit: false
+	      canSubmit: false,
+	      errorMessage: ""
 	    };
 	  },
 	  enableButton: function enableButton() {
@@ -50068,8 +50078,11 @@
 	    });
 	  },
 	  handleSubmitForm: function handleSubmitForm(model) {
-	    firebaseUtil.createUser(model, function (result) {
-	      if (result) {
+	    firebaseUtil.createUser(model, function (err, result) {
+	      if (err) {
+	        this.setState({ errorMessage: err });
+	      } else if (result) {
+	        this.setState({ errorMessage: "" });
 	        this.history.pushState(null, '/dashboard');
 	      }
 	    }.bind(this));
@@ -50083,15 +50096,27 @@
 	  render: function render() {
 	    var styles = {
 	      form: {
+	        display: 'flex',
+	        flexDirection: 'column',
 	        width: '70%',
-	        margin: 'auto'
+	        margin: 'auto',
+	        marginLeft: 'auto',
+	        marginRight: 'auto'
+	      },
+	      textField: {
+	        flex: '1 1 auto'
 	      },
 	      submitBttn: {
-	        width: '80%',
+	        flex: '1 1 auto',
+	        width: '70%',
+	        height: '10vw',
 	        margin: 'auto',
 	        marginLeft: 'auto',
 	        marginRight: 'auto',
 	        marginTop: '5vw'
+	      },
+	      labelStyle: {
+	        fontSize: '4vw'
 	      }
 	    };
 	    return React.createElement(
@@ -50107,14 +50132,23 @@
 	        )
 	      ),
 	      React.createElement(
+	        'div',
+	        { className: 'err_mssg' },
+	        React.createElement(
+	          'span',
+	          null,
+	          this.state.errorMessage
+	        )
+	      ),
+	      React.createElement(
 	        Form,
-	        { onSubmit: this.handleSubmitForm, style: styles.form },
-	        React.createElement(FormsyText, { name: 'firstName', hintText: 'Please enter your first name', floatingLabelText: 'First Name', validations: 'isWords', validationError: this.errorMessages.isWords, required: true }),
-	        React.createElement(FormsyText, { name: 'lastName', hintText: 'Please enter your last name', floatingLabelText: 'Last Name', validations: 'isWords', validationError: this.errorMessages.isWords, required: true }),
-	        React.createElement(FormsyText, { name: 'email', hintText: 'Please enter an email address', floatingLabelText: 'Email', validations: 'isEmail', validationError: this.errorMessages.isEmail, required: true }),
-	        React.createElement(FormsyText, { name: 'password', hintText: 'Please enter a password', floatingLabelText: 'Password', type: 'password', validations: 'minLength:8,maxLength:25', validationError: this.errorMessages.isPassword, required: true }),
-	        React.createElement(FormsyText, { name: 'passwordAgain', hintText: 'Please re-type the above password', floatingLabelText: 'Re-Type Password', type: 'password', validations: 'equalsField:password', validationError: this.errorMessages.isPasswordAgain, required: true }),
-	        React.createElement(RaisedButton, { type: 'submit', label: 'Create Account', primary: true, style: styles.submitBttn })
+	        { onValidSubmit: this.handleSubmitForm, style: styles.form, onValid: this.enableButton, onInvalid: this.disableButton },
+	        React.createElement(FormsyText, { name: 'firstName', hintText: 'Please enter your first name', floatingLabelText: 'First Name', validations: 'isWords', validationError: this.errorMessages.isWords, style: styles.textField, required: true }),
+	        React.createElement(FormsyText, { name: 'lastName', hintText: 'Please enter your last name', floatingLabelText: 'Last Name', validations: 'isWords', validationError: this.errorMessages.isWords, style: styles.textField, required: true }),
+	        React.createElement(FormsyText, { name: 'email', hintText: 'Please enter an email address', floatingLabelText: 'Email', validations: 'isEmail', validationError: this.errorMessages.isEmail, style: styles.textField, required: true }),
+	        React.createElement(FormsyText, { name: 'password', hintText: 'Please enter a password', floatingLabelText: 'Password', type: 'password', validations: 'minLength:8,maxLength:25', validationError: this.errorMessages.isPassword, style: styles.textField, required: true }),
+	        React.createElement(FormsyText, { name: 'passwordAgain', hintText: 'Please re-type the above password', floatingLabelText: 'Re-Type Password', type: 'password', validations: 'equalsField:password', validationError: this.errorMessages.isPasswordAgain, style: styles.textField, required: true }),
+	        React.createElement(RaisedButton, { type: 'submit', label: 'Create Account', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
 	      )
 	    );
 	  }
@@ -52341,7 +52375,7 @@
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,300italic,400italic,500italic,700italic);", ""]);
 
 	// module
-	exports.push([module.id, "/* Styling for Landing Component */\n\nbody {\n    font-family: 'Roboto', sans-serif;\n    margin: 0px;\n    background-color: #e0e0e0; /*#b2ebf2*/\n}\n\n.app_title {\n  width: 80%;\n  margin: 0 auto;\n}\n\n.app_title h1 {\n  text-align: center;\n  font-weight: 300;\n  font-size: 12vw;\n  color: #5c6bc0;\n}\n\n/* Styling for Create Account Component */\n\n#createAccount {\n  width: 100%;\n}\n\n/* Styling for Sign In Component */\n\n#signIn {\n  width: 100%;\n}", ""]);
+	exports.push([module.id, "/* Styling for Landing Component */\n\nbody {\n    font-family: 'Roboto', sans-serif;\n    margin: 0px;\n    background-color: #e0e0e0; /*#b2ebf2*/\n}\n\n.app_title {\n  width: 80%;\n  margin: 0 auto;\n}\n\n.app_title h1 {\n  text-align: center;\n  font-weight: 300;\n  font-size: 12vw;\n  color: #5c6bc0;\n  margin-top: 8vw;\n  margin-bottom: 3vw;\n}\n\n.err_mssg {\n  width: 80%;\n  margin: auto;\n  text-align: center;\n}\n\n.err_mssg span {\n  font-weight: 400;\n  font-size: 3vw;\n  color: #ff1744;\n}\n\n/* Styling for Create Account Component */\n\n#createAccount {\n  width: 100%;\n}\n\n/* Styling for Sign In Component */\n\n#signIn {\n  width: 100%;\n}", ""]);
 
 	// exports
 
@@ -53834,7 +53868,8 @@
 	    return {
 	      muiTheme: this.context.muiTheme,
 	      canSubmit: false,
-	      loggedIn: false
+	      loggedIn: false,
+	      errorMessage: ""
 	    };
 	  },
 	  enableButton: function enableButton() {
@@ -53848,8 +53883,11 @@
 	    });
 	  },
 	  handleSubmitForm: function handleSubmitForm(model) {
-	    firebaseUtil.signInUser(model, function (result) {
-	      if (result) {
+	    firebaseUtil.signInUser(model, function (err, result) {
+	      if (err) {
+	        this.setState({ errorMessage: err });
+	      } else if (result) {
+	        this.setState({ errorMessage: err });
 	        this.history.pushState(null, '/dashboard');
 	      }
 	    }.bind(this));
@@ -53857,15 +53895,27 @@
 	  render: function render() {
 	    var styles = {
 	      form: {
+	        display: 'flex',
+	        flexDirection: 'column',
 	        width: '70%',
-	        margin: 'auto'
+	        margin: 'auto',
+	        marginLeft: 'auto',
+	        marginRight: 'auto'
+	      },
+	      textField: {
+	        flex: '1 1 auto'
 	      },
 	      submitBttn: {
-	        width: '80%',
+	        flex: '1 1 auto',
+	        width: '70%',
+	        height: '10vw',
 	        margin: 'auto',
 	        marginLeft: 'auto',
 	        marginRight: 'auto',
 	        marginTop: '10vw'
+	      },
+	      labelStyle: {
+	        fontSize: '4vw'
 	      }
 	    };
 	    return React.createElement(
@@ -53881,11 +53931,20 @@
 	        )
 	      ),
 	      React.createElement(
+	        'div',
+	        { className: 'err_mssg' },
+	        React.createElement(
+	          'span',
+	          null,
+	          this.state.errorMessage
+	        )
+	      ),
+	      React.createElement(
 	        Form,
-	        { onSubmit: this.handleSubmitForm, style: styles.form },
-	        React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', required: true }),
-	        React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', required: true }),
-	        React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', primary: true, style: styles.submitBttn })
+	        { onValidSubmit: this.handleSubmitForm, onValid: this.enableButton, onInvalid: this.disableButton, style: styles.form },
+	        React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', style: styles.textField, required: true }),
+	        React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', style: styles.textField, required: true }),
+	        React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
 	      )
 	    );
 	  }
