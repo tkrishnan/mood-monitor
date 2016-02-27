@@ -1,0 +1,115 @@
+/* Styling for AssessmentContent.js and the starting prompt of the assessment survey */
+
+#assessContent {
+    width: 100%;
+}
+
+#startQuest {
+    width: 60%;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+#startQuest h1 {
+    text-align: center;
+    font-size: 10vw;
+    font-weight: 300;
+    color: #03a9f4;
+}
+
+#next {
+    width: 40%;
+    margin: 0 auto;
+}
+
+/* Styling for the Assessment Survey questions */
+
+.questionText {
+    width: 80%;
+    height: 300px;
+    line-height: 300px;
+    margin: 0 auto;
+}
+
+.questionText h2 {
+    text-align: center;
+    font-size: 6vw;
+    font-weight: 400;
+    color: #03a9f4/*#00838f*/;
+}
+
+.questionText h2 span {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: normal;
+}
+
+#yesBttn {
+    float: left;  
+}
+
+#noBttn {
+    float: right;
+}
+
+#lastQuestion {
+    width: 100%;
+}
+
+#sliderLabel {
+    width: 80%;
+    margin: 0 auto;
+}
+
+#sliderLabel #min {
+    margin: 0 auto;
+    float: left;
+    font-size: 2.7vw;
+    font-weight: 700;
+    color: #00838F;
+}
+
+#sliderLabel #max {
+    margin: 0 auto;
+    float: right;
+    font-size: 2.8vw;
+    font-weight: 700;
+    color: #00838F;
+}
+
+#sliderCont {
+    width: 80%;
+    margin: 0 auto;
+}
+
+#submitAssess {
+    width: 20%;
+    margin: 0 auto;
+}
+
+/* Styling for Assessment Results */
+
+#assessResults h3 {
+    text-align: center;
+    font-weight: 500;
+    color: #00838F;
+}
+
+#assessResults h1 {
+    margin-bottom: 50px;
+    text-align: center;
+    font-weight: 300;
+    font-size: 7.5vw;
+    color: #03a9f4;
+}
+
+#resultBttns {
+    width: 90%;
+    margin: auto;
+}
+
+#resultBttns .resBttn {
+    width: 100%;
+    height: 17vw;
+    line-height: 17vw;
+}

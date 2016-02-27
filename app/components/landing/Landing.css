@@ -1,0 +1,33 @@
+/* Styling for Landing Component */
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,300italic,400italic,500italic,700italic);
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0px;
+    background-color: #e0e0e0; /*#b2ebf2*/
+}
+
+.app_title {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.app_title h1 {
+  text-align: center;
+  font-weight: 300;
+  font-size: 12vw;
+  color: #5c6bc0;
+}
+
+/* Styling for Create Account Component */
+
+#createAccount {
+  width: 100%;
+}
+
+/* Styling for Sign In Component */
+
+#signIn {
+  width: 100%;
+}

@@ -1,0 +1,99 @@
+/* Styling for Calendar page content  */
+
+#calendarContent {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Styling for expand to previous months button  */
+
+.expandBttn {
+  width: 60%;
+  margin: auto;
+}
+
+/* Styling for the month titles */
+
+.monthTitle h2 {
+  width: 90%;
+  margin: auto;
+  padding-bottom: 30px;
+  line-height: 5vw;
+  text-align: center;
+  font-weight: 400;
+  font-size: 6vw;
+  color: #1a237e;
+}
+
+/* Styling for WeekDayLabel component */
+
+#weekDayNames {
+  width: 90%;
+  margin: auto;
+  padding-bottom: 2vw;
+  padding-right: 1vw;
+  overflow: hidden;
+}
+
+.day {
+  width: 14.28%;
+  text-align: center;
+  float: left;
+  font-weight: 400;
+  font-size: 3vw;
+  color: #00838F;
+}
+
+/*  Styling for Calendar grid component */
+
+.calendarGridList {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
+  align-items: center;
+}
+
+/* Styling for Calendar Day component  */
+
+.tile {
+  max-width: 9.5%;
+  min-width: 9.5vw;
+  min-height: 9.5vw;
+  margin: 0 auto;
+}
+
+.offsetTile {
+  background-color: #37474f;
+}
+
+.dayTile {
+  background-color: #90a4ae;
+  position: relative;
+}
+
+.dayTile label {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding-right: 0.75vw;
+  
+  line-height: 4vw;
+  font-size: 3vw;
+  color: white;
+  font-weight: 400;
+}
+
+.moodPopOver {
+  width: 30vw;
+  height: 13vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  text-align: center;
+  line-height: 4vw;
+  font-size: 3vw;
+  font-weight: 400;
+}
