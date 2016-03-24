@@ -3,26 +3,24 @@
 require('./Calendar.css');
 var React = require('react');
 
+var evaluateScore = require('../../util/evaluateScore.js');
+
 var FlatButton = require('material-ui/lib/flat-button');
 var Popover = require('material-ui/lib/popover/popover');
 
 
 var moodColors = {
-  zero: "#4dd0e1",
-  minimal: "#00b0ff",
-  mild: "#0288d1",
-  moderate: "#01579b",
-  moderatelySevere: "#3949ab",
-  severe: "#1a237e"
-};
-
-var moodLabels = {
-  zero: "Zero Depression",
-  minimal: "Minimal Depression",
-  mild: "Mild Depression",
-  moderate: "Moderate Depression",
-  moderatelySevere: "Moderately Severe Depression",
-  severe: "Severe Depression"
+  0: "#4dd0e1",
+  1: "#00b0ff",
+  2: "#00b0ff",
+  3: "#0288d1",
+  4: "#0288d1",
+  5: "#01579b",
+  6: "#01579b",
+  7: "#3949ab",
+  8: "#3949ab",
+  9: "#1a237e",
+  10: "#1a237e" 
 };
 
 
@@ -61,33 +59,69 @@ var CalendarDay = React.createClass({
         minHeight: '11vw',
         margin: '0.75vw',
         flex: '1'
-      },
-      calDay: {
-        backgroundColor: moodColors[this.props.moodObj], 
-      },
-      popup: {
-        color: moodColors[this.props.moodObj],
-        padding: '1.5vw'
       }
     }; 
-    
-    return (
-      <div className="calendarDay">
-        <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
-          <div style={styles.calDay} className="tile dayTile"> 
-            <label>{this.props.dateObj.format('D')}</label>
-          </div>        
-        </FlatButton>
-        <Popover
-        open={this.state.open}
-        anchorEl={this.state.anchorEl}
-        anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-        targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-        onRequestClose={this.handleRequestClose}>
-          <div style={styles.popup} className="moodPopOver">{moodLabels[this.props.moodObj]}</div>
-        </Popover>
-      </div>
-    );
+    if (!this.props.data) {
+      console.log("tile with no data");
+      var noMoodStyles = {
+        color: '#455a64',
+        padding: '1.5vw'
+      };
+      return (
+        <div className="calendarDay">
+          <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
+            <div className="tile doneTile">
+              <label>{this.props.date}</label>
+            </div>
+          </FlatButton>
+          <Popover
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+          targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          onRequestClose={this.handleRequestClose}>
+            <div style={noMoodStyles} className="moodPopOver">No assessment taken</div>
+          </Popover>
+        </div>
+      );
+    } else if (this.props.data == "Not Yet") {
+      console.log("tile in future");
+      return (
+        <div className="calendarDay">
+          <div className="tile futureTile">
+            <label>{this.props.date}</label>
+          </div>
+        </div>
+      );
+    } else if (this.props.data) {
+      console.log("tile with data");
+      var moodStyles = {
+        calDay: {
+        backgroundColor: moodColors[this.props.data.score.toString()], 
+      },
+        moodPopup: {
+          color: moodColors[this.props.data.score.toString()],
+          padding: '1.5vw'
+        },
+      };
+      return (
+        <div className="calendarDay">
+          <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
+            <div style={moodStyles.calDay} className="tile dayTile"> 
+              <label>{this.props.date}</label>
+            </div>        
+          </FlatButton>
+          <Popover
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+          targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          onRequestClose={this.handleRequestClose}>
+            <div style={moodStyles.moodPopup} className="moodPopOver">{evaluateScore(this.props.data.score)}</div>
+          </Popover>
+        </div>
+      ); 
+    }
   }
 });
 

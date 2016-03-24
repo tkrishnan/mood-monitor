@@ -20,10 +20,10 @@ var ThemeManager = require('material-ui/lib/styles/theme-manager');
 var MyRawTheme = require('../rawTheme.js');
 
 
-var App = React.createClass({
+var Dashboard = React.createClass({
   mixins: [History],
   childContextTypes: {
-    muiTheme: React.PropTypes.object,
+    muiTheme: React.PropTypes.object
   },
   getChildContext: function() {
     return {muiTheme: ThemeManager.getMuiTheme(MyRawTheme)};
@@ -43,6 +43,10 @@ var App = React.createClass({
         width: '100%',
         flexWrap: 'wrap',
       },
+      titleStyle: {
+        fontFamily: "'Comfortaa', cursive",
+        fontWeight: '400'
+      },
       tabs: {
         width: '100%',
       },
@@ -52,6 +56,7 @@ var App = React.createClass({
         <header>
           <AppBar 
           title="Mood Monitor"
+          titleStyle= {styles.titleStyle}
           style = {styles.appBar} 
           iconElementRight={<FlatButton label="Account" containerElement={<Link to='/account'/>} linkButton={true}/>} 
           showMenuIconButton={false}>
@@ -74,4 +79,4 @@ var App = React.createClass({
   }
 });
 
-module.exports = App;
+module.exports = Dashboard;

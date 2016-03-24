@@ -1,4 +1,4 @@
-/* Styling for AssessmentContent.js and the starting prompt of the assessment survey */
+/* Styling for Assessment Content page, and the starting prompt of the assessment survey */
 
 #assessContent {
     width: 100%;
@@ -49,7 +49,7 @@
     width: 80%;
     margin: auto;
     flex: 1 1 auto;
-    margin-top: 30vw;
+    margin-top: 40vw;
 }
 
 .yesBttn {
@@ -62,7 +62,7 @@
 
 #slider {
     flex: 1 1 auto;
-    margin-top: 25vw;
+    margin-top: 31vw;
 }
 
 #sliderLabel {
@@ -73,7 +73,7 @@
 #sliderLabel #min {
     margin: 0 auto;
     float: left;
-    font-size: 2.8vw;
+    font-size: 3vw;
     font-weight: 700;
     color: #00838F;
 }
@@ -81,7 +81,7 @@
 #sliderLabel #max {
     margin: 0 auto;
     float: right;
-    font-size: 2.8vw;
+    font-size: 3vw;
     font-weight: 700;
     color: #00838F;
 }
@@ -92,6 +92,7 @@
 }
 
 /* Styling for Assessment Results */
+
 #assessResults {
     display: flex;
     flex-direction: column;
@@ -100,7 +101,7 @@
 
 #result {
     flex: 1 1 auto;
-    margin-bottom: 20vw;
+    margin-bottom: 17vw;
     width: 90%;
     margin: auto;
 }
@@ -118,6 +119,19 @@
     color: #03a9f4;
 }
 
+#errRetake {
+    flex: 1 1 auto;
+    width: 90%;
+    margin: auto;
+    margin-top: 3vw;
+}
+
+#errRetake span {
+    font-weight: 400;
+    font-size: 3vw;
+    color: #ff1744;
+}
+
 #resultBttns {
     flex: 1 1 auto;
     width: 90%;
@@ -126,7 +140,7 @@
 }
 
 #resultBttns .resBttn {
-    width: 100%;
-    height: 17vw;
-    line-height: 17vw;
+    margin-bottom: 3vw;
 }
+
+/* Styling for Suggestions Page */

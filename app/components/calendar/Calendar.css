@@ -2,22 +2,28 @@
 
 #calendarContent {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 5vw;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Styling for expand to previous months button  */
-
-.expandBttn {
-  width: 60%;
-  margin: auto;
+#pastCalendarContent {
+  margin-top: 3vw;
+  flex: 1 1 auto;
 }
+
+#currentCalendarContent {
+  margin-top: 3vw;
+  flex: 1 1 auto;
+}
+
 
 /* Styling for the month titles */
 
 .monthTitle h2 {
   width: 90%;
   margin: auto;
-  padding-bottom: 30px;
+  padding-bottom: 6vw;
   line-height: 5vw;
   text-align: center;
   font-weight: 400;
@@ -55,6 +61,15 @@
   align-items: center;
 }
 
+.offsetTile {
+  background-color: #e0e0e0;
+  max-width: 11%;
+  min-width: 11vw;
+  min-height: 11vw;
+  margin: 0.75vw;
+  flex: 1;
+}
+
 /* Styling for Calendar Day component  */
 
 .tile {
@@ -62,18 +77,10 @@
   min-width: 9.5vw;
   min-height: 9.5vw;
   margin: 0 auto;
-}
-
-.offsetTile {
-  background-color: #37474f;
-}
-
-.dayTile {
-  background-color: #90a4ae;
   position: relative;
 }
 
-.dayTile label {
+.tile label {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -81,8 +88,32 @@
   
   line-height: 4vw;
   font-size: 3vw;
-  color: white;
   font-weight: 400;
+}
+
+.dayTile label {
+  color: #e0e0e0;
+}
+
+.doneTile {
+  background-color: #607d8b;
+}
+
+.doneTile label {
+  color: #e0e0e0;
+}
+
+.futureTile {
+  background-color: #b0bec5; 
+  max-width: 9.5%;
+  min-width: 9.5vw;
+  min-height: 9.5vw;
+  margin: 1.5vw;
+  flex: 1;
+}
+
+.futureTile label {
+  color: #37474f;  
 }
 
 .moodPopOver {

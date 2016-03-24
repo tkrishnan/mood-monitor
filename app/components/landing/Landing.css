@@ -1,6 +1,8 @@
 /* Styling for Landing Component */
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,300italic,400italic,500italic,700italic);
+@import url(https://fonts.googleapis.com/css?family=Comfortaa:400,300,700|Quicksand:400,700,300);
+
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -9,14 +11,15 @@ body {
 }
 
 .app_title {
+  font-family: 'Comfortaa', cursive;
   width: 80%;
   margin: 0 auto;
 }
 
 .app_title h1 {
   text-align: center;
-  font-weight: 300;
-  font-size: 12vw;
+  font-weight: 400;
+  font-size: 13vw;
   color: #5c6bc0;
   margin-top: 8vw;
   margin-bottom: 3vw;

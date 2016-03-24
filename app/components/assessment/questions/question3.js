@@ -1,8 +1,14 @@
 'use strict';
 
 require('../Assessment.css');
+
 var React = require('react');
+
+var firebaseUtil = require('../../../util/firebaseUtil.js');
+
+//var History = require('react-router').History;
 var Link = require('react-router').Link;
+
 var FlatButton = require('material-ui/lib/flat-button');
 var ThemeManager = require('material-ui/lib/styles/theme-manager');
 var MyRawTheme = require('../../../rawTheme.js');
@@ -14,6 +20,12 @@ var QuestionThree = React.createClass({
   },
   getChildContext: function() {
     return {muiTheme: ThemeManager.getMuiTheme(MyRawTheme)};
+  },
+  handleYes: function() {
+    firebaseUtil.tempSaveAssessQuest('question3', 1);
+  },
+  handleNo: function() {
+    firebaseUtil.tempSaveAssessQuest('question3', 0);
   },
   render: function() {
     var style = {
@@ -42,7 +54,8 @@ var QuestionThree = React.createClass({
             label="YES" 
             labelStyle={style.labelStyle} 
             style={style.rootStyle} 
-            primary={true}/>
+            primary={true}
+            onTouchTap={this.handleYes}/>
           </div>
           <div className="noBttn">
             <FlatButton 
@@ -51,7 +64,8 @@ var QuestionThree = React.createClass({
             label="NO" 
             labelStyle={style.labelStyle} 
             style={style.rootStyle} 
-            secondary={true}/>
+            secondary={true}
+            onTouchTap={this.handleNo}/>
           </div>
         </div>
         {this.props.children}

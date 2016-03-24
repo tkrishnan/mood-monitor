@@ -3,6 +3,8 @@
 var React = require('react');
 
 var RaisedButton = require('material-ui/lib/raised-button');
+
+var History = require('react-router').History;
 var Link = require('react-router').Link;
 
 var firebaseUtil = require('../../util/firebaseUtil.js');
@@ -12,6 +14,7 @@ var MyRawTheme = require('../../rawTheme.js');
 
 
 var AccountContent = React.createClass({
+    mixins: [History],
     childContextTypes: {
         muiTheme: React.PropTypes.object,
     },
