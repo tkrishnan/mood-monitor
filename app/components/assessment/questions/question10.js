@@ -44,7 +44,7 @@ var LastQuestion = React.createClass({
       },
       rootStyle: {
         flex: '1 1 auto',
-        width: '20%',
+        width: '40%',
         margin: 'auto',
         height: '10vw',
         lineHeight: '10vw',

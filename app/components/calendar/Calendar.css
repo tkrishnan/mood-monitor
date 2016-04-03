@@ -8,13 +8,29 @@
 }
 
 #pastCalendarContent {
-  margin-top: 3vw;
-  flex: 1 1 auto;
+  margin: 0 auto;
+  flex: 1 5 auto;
+}
+
+.pastCalendar {
+  margin-top: 0;
+  margin-bottom: 5vw;
 }
 
 #currentCalendarContent {
-  margin-top: 3vw;
-  flex: 1 1 auto;
+  flex: 1 5 auto;
+}
+
+#noMoreMessage {
+  width: 90%;
+  margin: auto;
+  margin-bottom: 5vw;
+  margin-top: 2vw;
+  
+  color: #0097a7;
+  font-size: 4.5vw;
+  font-weight: 500;
+  text-align: center;
 }
 
 
@@ -57,20 +73,26 @@
   margin: auto;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-start;
   align-content: space-around;
   align-items: center;
 }
 
 .offsetTile {
   background-color: #e0e0e0;
-  max-width: 11%;
-  min-width: 11vw;
-  min-height: 11vw;
-  margin: 0.75vw;
-  flex: 1;
+  width: 14.28%;
+  float: left;
+  flex: 1 5 auto;
 }
 
 /* Styling for Calendar Day component  */
+
+.calendarDay {
+  max-width: 14.28%;
+  width: 14.28%;
+  float: left;
+  flex: 1 5 auto;
+}
 
 .tile {
   max-width: 9.5%;
@@ -95,6 +117,13 @@
   color: #e0e0e0;
 }
 
+.currentDay {
+  border-width: 1vw;
+  border-style: solid;
+  border-color: #9c27b0;
+  box-sizing: border-box;
+}
+
 .doneTile {
   background-color: #607d8b;
 }
@@ -103,13 +132,25 @@
   color: #e0e0e0;
 }
 
+.futureTileWrapper {
+  display: inline-block;
+  line-height: 36px;
+  max-width: 11%;
+  min-width: 11vw;
+  min-height: 11vw;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+}
+
 .futureTile {
+  align-self: center;
   background-color: #b0bec5; 
-  max-width: 9.5%;
-  min-width: 9.5vw;
-  min-height: 9.5vw;
-  margin: 1.5vw;
-  flex: 1;
+  position: absolute;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .futureTile label {
@@ -117,14 +158,19 @@
 }
 
 .moodPopOver {
-  width: 30vw;
-  height: 13vw;
+  width: 40vw;
+  height: 15vw;
+  padding: 5vw;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   
   text-align: center;
-  line-height: 4vw;
-  font-size: 3vw;
-  font-weight: 400;
+  font-weight: 500;
+  font-size: 3.5vw;
+}
+
+.moodPopOver h2 {
+  font-size: 4vw;
 }

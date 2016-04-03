@@ -26,7 +26,7 @@ body {
 }
 
 .formContainer {
-  width: 70%;
+  width: 80%;
   margin: auto;
   margin-left: auto;
   margin-right: auto;
@@ -55,19 +55,135 @@ body {
 }
 
 .err_mssg span {
-  font-weight: 400;
-  font-size: 3vw;
   color: #ff1744;
+  font-size: 3vw;
+  font-weight: 400;
 }
 
 /* Styling for Create Account Component */
 
 #createAccount {
+  display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
 /* Styling for Sign In Component */
 
 #signIn {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+}
+
+.resetLink {
+  margin: 3vw;
+  text-align: center
+}
+
+.resetLink a {
+  text-decoration: none;
+}
+
+.resetLink a span {
+  color: #26c6da;
+  font-weight: 500;
+  font-size:  3.5vw;
+}
+
+/* Styling for Reset Password Component */
+
+#resetPasswordContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  width: 100%;
+  margin: auto;
+}
+
+#closeBttn {
+  align-self: flex-start;
+  width: 33%;
+  flex: 1 1 auto;
+  height: 16vw;
+  max-height: 10%;
+}
+
+#resetPassword {
+  flex: 1 1 auto;
+  
+  display: flex;
+  flex-direction: column;
+  
+  width: 85%;
+  margin: auto;
+}
+
+#forgotTitle {
+  flex: 1 1 auto;
+  height: 15vw;
+  
+  color: #26c6da;
+  font-size: 6.5vw;
+  font-weight: 300;
+  margin: 1vw;
+  text-align: center;
+}
+
+#forgotInstructions {
+  flex: 1 1 auto;
+  
+  color: #5c6bc0;
+  font-size: 4vw;
+  font-weight: 400;
+  text-align: justify;
+}
+
+#errMessage {
+  flex: 1 1 auto;
+  width: 85%;
+  margin: auto;
+  text-align: center;
+}
+
+#errMessage span {
+  color: #ff1744;
+  font-size: 2.5vw;
+  font-weight: 400;
+}
+
+#successMssg {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+#successMssg span {
+  color: #9fa8da;
+  font-size: 4vw;
+  font-weight: 400;
+}
+
+#resetFormContainer {
+  flex: 1 1 auto;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+}
+
+#resetFormContainer form input:-webkit-autofill,
+#resetFormContainer form input:-webkit-autofill:hover,
+#resetFormContainer form input:-webkit-autofill:focus,
+#resetFormContainer form input:-webkit-autofill:active { 
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: #1a237e !important;
+}
+
+#resetFormContainer form input:-moz-autofill,
+#resetFormContainer form input:-moz-autofill:hover,
+#resetFormContainer form input:-moz-autofill:focus,
+#resetFormContainer form input:-moz-autofill:active { 
+  transition: background-color 5000s ease-in-out 0s;
+  -moz-text-fill-color: #1a237e !important;
 }

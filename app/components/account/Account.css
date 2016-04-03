@@ -1,0 +1,147 @@
+/* General styling for Account Contents component */
+
+#accountContentDialog {
+  width: 100%;
+}
+
+/* Styling for Dialog Content */
+
+#closeBttn {
+  flex: 1 1 auto;
+  width: 33%;
+  height: 16vw;
+  max-height: 5%;
+}
+
+#dialogContent {
+  display: flex;
+  flex-direction: column;
+  height: 220vw;
+  max-height: 220vw;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.dialogTitle {
+  width: 80%;
+  margin: auto;
+}
+
+.dialogTitle h1 {
+  color: #26c6da;
+  font-size: 10vw;
+  font-weight: 300;
+  margin-top: 5vw;
+  margin-bottom: 1vw;
+}
+
+#accountContent {
+  flex: 1 1 auto;
+  height: 30%;
+  width: 75%;
+  margin: 0 auto;
+  padding-top: 5vw;
+  padding-bottom: 5vw;
+}
+
+/* Styling for AccountInfo component */
+
+#accountInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.contentField {
+  display: flex;
+  margin-top: 3vw;
+  margin-bottom: 3vw; 
+}
+
+.contentField .label {
+  flex: 1 1 auto;
+  display: inline-block;
+  width: 45%;
+  
+  color: #5c6bc0/*#3f51b5*/;
+  font-size: 4.25vw;
+  font-weight: 400;
+}
+
+.contentField .content {
+  flex: 1 1 auto;
+  display: inline-block;
+  
+  color: #1a237e;
+  font-size: 4vw;
+  font-weight: 300;
+  text-align: right;
+}
+
+#passwordContent .content {
+  color: #7986cb;
+  font-size: 4.5vw;
+  font-style: italic;
+}
+
+#actionBttns {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  margin: 5vw;
+  margin-top: 10vw;
+}
+
+/* Styling for AccountForm component */
+
+.error_message {
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.error_message .err {
+  color: #ff1744;
+  font-weight: 400;
+  font-size: 2.7vw;
+}
+
+#formContainer {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#formContainer form input:-webkit-autofill,
+#formContainer form input:-webkit-autofill:hover,
+#formContainer form input:-webkit-autofill:focus,
+#formContainer form input:-webkit-autofill:active { 
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: #1a237e !important;
+}
+
+#formContainer form input:-moz-autofill,
+#formContainer form input:-moz-autofill:hover,
+#formContainer form input:-moz-autofill:focus,
+#formContainer form input:-moz-autofill:active { 
+  transition: background-color 5000s ease-in-out 0s;
+  -moz-text-fill-color: #1a237e !important;
+}
+
+#warningDelete {
+  flex: 1 1 auto;
+  
+  color: #7986cb;
+  font-size: 3.25vw;
+  font-style: italic;
+  font-weight: 300;
+  text-align: center;
+}
+
+#formActionButtons {
+  flex: 1 1 auto;
+  display: flex;
+  margin-top: 3vw;
+}

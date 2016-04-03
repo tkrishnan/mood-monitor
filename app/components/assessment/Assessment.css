@@ -4,21 +4,22 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 #startQuest {
-    width: 60%;
+    width: 70%;
     margin: auto;
-    margin-top: 5vw;
-    margin-bottom: 5vw;
+    margin-top: 10vw;
+    margin-bottom: 7vw;
     flex: 1 1 auto;
 }
 
 #startQuest h1 {
     text-align: center;
-    font-size: 10vw;
+    font-size: 13vw;
     font-weight: 300;
-    color: #03a9f4;
+    color: #26c6da/*#03a9f4*/;
 }
 
 /* Styling for the Assessment Survey questions */
@@ -62,11 +63,13 @@
 
 #slider {
     flex: 1 1 auto;
+    margin: 0 auto;
     margin-top: 31vw;
+    width: 90%;
 }
 
 #sliderLabel {
-    width: 80%;
+    width: 90%;
     margin: 0 auto;
 }
 
@@ -87,7 +90,7 @@
 }
 
 #sliderCont {
-    width: 80%;
+    width: 90%;
     margin: 0 auto;
 }
 
@@ -101,21 +104,26 @@
 
 #result {
     flex: 1 1 auto;
-    margin-bottom: 17vw;
+    margin-bottom: 20vw;
     width: 90%;
     margin: auto;
+    text-align: center;
 }
 
 #result h3 {
-    text-align: center;
     font-weight: 500;
     color: #00838F;
 }
 
 #result h1 {
-    text-align: center;
     font-weight: 300;
-    font-size: 7.5vw;
+    font-size: 9vw;
+    color: #03a9f4;
+}
+
+#result h2 {
+    font-weight: 300;
+    font-size: 6vw;
     color: #03a9f4;
 }
 

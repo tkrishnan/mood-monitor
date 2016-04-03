@@ -18,6 +18,7 @@ var SuggestionsForMild = require('../components/assessment/suggestions/MildDepre
 var SuggestionsForModerate = require('../components/assessment/suggestions/ModerateDepression.js');
 var SuggestionsForModeratelySevere = require('../components/assessment/suggestions/ModeratelySevereDepression.js');
 var SuggestionsForSevere = require('../components/assessment/suggestions/SevereDepression.js');
+var ResetPassword = require('../components/landing/ResetPassword.js');
 var TextMssgContent = require('../components/txtMssgContacts/TextMssgContent.js');
 
 var Route = require('react-router').Route;
@@ -36,8 +37,9 @@ var AppRoutes = (
     <Route path='/' component={Landing} onEnter={requireSignOut}>
       <IndexRoute component={SignIn}/>
       <Route path='/signin' component={SignIn}/>
-      <Route path='/create-account' component={CreateAccount}/>
+          <Route path='/create-account' component={CreateAccount} onEnter={requireSignOut}/>
     </Route>
+    <Route path='/reset-password' component={ResetPassword}/>
     <Route path='/dashboard' component={Dashboard} onEnter={requireAuth}>
       <IndexRoute component={AssessmentContent} onEnter={requireNotAssessed}/>
       <Route onEnter={requireNotAssessed}>
@@ -62,7 +64,6 @@ var AppRoutes = (
         <Route path='/assessment-results/suggestions/severe' component={SuggestionsForSevere}/>
       </Route>
       <Redirect from='/assessment' to='/dashboard'/>
-      <Route path='/account' component={AccountContent}/>
       <Route path='/calendar' component={CalendarContent} onEnter={retrieveThisMonthData}/>
       <Route path='/safety-plan' component={SafetyContent}/>
       <Route path='/emergency-contacts' component={TextMssgContent}/>

@@ -11,7 +11,7 @@ var rawTheme =  {
   fontFamily: 'Roboto, sans-serif',
   palette: {
     primary1Color: Colors.cyan400,
-    primary2Color: Colors.cyanA100,
+    primary2Color: Colors.cyanA200,
     primary3Color: Colors.cyan700,
     accent1Color: Colors.indigo400,
     accent2Color: Colors.blueGrey200,

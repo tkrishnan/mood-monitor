@@ -65,6 +65,7 @@ var firebaseUtil = {
       } else {
         authData.email = userData.email;
         cachedUser = authData;
+        this.getAllUserData();
         callback(null, authData);
         callbackCreateUser && callbackCreateUser(false, true);
         console.log("Successfully signed in user with payload:", authData);
@@ -81,8 +82,141 @@ var firebaseUtil = {
   isSignedIn: function() {
     if (ref.getAuth() || cachedUser) {
       cachedUser = ref.getAuth();
+      this.getAllUserData();
     }
     return cachedUser && true || ref.getAuth() || false;
+  },
+  getAllUserData: function() {
+    ref.child('user').child(cachedUser.uid).once("value", function(snapshot){
+      console.log(snapshot.val());
+      cachedUser.password.firstName = snapshot.val().firstName;
+      cachedUser.password.lastName = snapshot.val().lastName;
+    });
+  },
+  getCachedUser: function() {
+    console.log(cachedUser);
+    return cachedUser;
+  },
+  changeUserFirstName: function(email, password, firstName, callback) {
+    ref.authWithPassword({email: email, password: password}, function(error, authData){
+      if (error) {
+        console.log("Authentication error for first name change:", error.message);
+        callback(error.message);
+      } else {
+        ref.child('user').child(cachedUser.uid).child('firstName').set(firstName);
+        console.log("Successfully changed first name");
+        firebaseUtil.getAllUserData();
+        callback();
+      }
+    });
+  },
+  changeUserLastName: function(email, password, lastName, callback) {
+    ref.authWithPassword({email: email, password: password}, function(error, authData){
+      if (error) {
+        console.log("Authentication error for last name change:", error.message);
+        callback(error.message);
+      } else {
+        ref.child('user').child(cachedUser.uid).child('lastName').set(lastName);
+        console.log("Successfully changed last name");
+        firebaseUtil.getAllUserData();
+        callback();
+      }
+    }); 
+  },
+  changeUserEmail: function(oldEmail, password, newEmail, callback) {
+    ref.changeEmail({
+      oldEmail: oldEmail,
+      newEmail: newEmail,
+      password: password
+    }, function(err){
+      if (err) {
+        switch(err.code) {
+          case 'INVALID_USER':
+            console.log("The specified user account does not exist.");
+            callback("The specified user account does not exist.");
+            break;
+          case 'INVALID_PASSWORD':
+            console.log("The specified user account password is incorrect.");
+            callback("The specified user account password is incorrect.");
+            break
+          default:
+            console.log("Error changing email: ", err.message);
+            callback(err.message);
+        }
+      } else {
+        ref.child('user').child(cachedUser.uid).child('email').set(newEmail);
+        console.log("Email changed successfully");
+        firebaseUtil.getAllUserData();
+        callback();
+      }
+    });
+  },
+  changeUserPassword: function(email, oldPassword, newPassword, callback) {
+    ref.changePassword({
+      email: email,
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    }, function(err) {
+      if (err) {
+        switch(err.code) {
+          case 'INVALID_USER':
+            console.log("The specified user account does not exist.");
+            callback("The specified user account does not exist.");
+            break;
+          case 'INVALID_PASSWORD':
+            console.log("The specified user account password is incorrect.");
+            callback("The specified user account password is incorrect.");
+            break;
+          default:
+            console.log("Error changing email: ", err.message);
+            callback(err.message);
+        }
+      } else {
+        console.log("Password changed successfully");
+        ref.child('user').child(cachedUser.uid).child('token').set(ref.getAuth().token);
+        firebaseUtil.getAllUserData();
+        callback();
+      }
+    });
+  },
+  sendUserPasswordResetEmail: function(email, callback) {
+    ref.resetPassword({
+      email: email
+    }, function(err) {
+      if (err) {
+        switch(err.code) {
+          case('INVALID_USER'):
+            console.log("The specified user account does not exist.");
+            callback("The specified user account does not exist.");
+            break;
+          default:
+            console.log("Error resetting password: ", err.message);
+            callback(err.message);
+        }
+      } else {
+        console.log("Password reset email sent successfully");
+        callback();
+      }
+    });
+  },
+  deleteUser: function(email, password, callback) {
+    ref.removeUser({
+      email: email,
+      password: password
+    }, function(err) {
+      if (err) {
+        switch(err.code) {
+          case 'INVALID_EMAIL':
+          case 'INVALID_PASSWORD':
+          default: 
+            console.log("Error deleting user: ", err);
+            callback(err.message);
+        }
+      } else {
+        console.log("User deleted successfully");
+        callback();
+      }
+    });
   },
   checkIfAssessed: function(callback) {
     if (assessed == null) {
@@ -97,6 +231,8 @@ var firebaseUtil = {
           assessed = false;
           callback(false); 
         }
+      }, function(err) {
+        console.log("The read failed: ", err);
       }.bind(this));
     } else {
       console.log("Assessment today is: " + assessed);
@@ -106,10 +242,9 @@ var firebaseUtil = {
   getTodaysAssessmentResult: function(callback) {
     ref.child('assessment').child(cachedUser.uid).child(dateAssessed).once("value", function(snapshot) {
       var assessmentObj = snapshot.val();
-      callback(false, assessmentObj.score);
+      callback(assessmentObj.score);
       console.log("The read was successful: ", assessmentObj);
     }, function(err) {
-      callback(err, false);
       console.log("The read failed: ", err);
     }.bind(this));
   },
@@ -133,7 +268,6 @@ var firebaseUtil = {
     ref.child('assessment').child(cachedUser.uid).child(dateAssessed).remove( function(err) {
       if (err) {
         console.log("Unable to delete today's assessment data: ", err.message);
-        callback(err.message);
       } else {
         console.log("Successfully able to delete today's assessment data");
         assessed = null;
@@ -145,16 +279,19 @@ var firebaseUtil = {
   retrieveMonthlyAssessmentRecord: function(startDate, endDate, callback) {
     var answer = {};
     ref.child('assessment').child(cachedUser.uid).orderByKey().startAt(startDate).endAt(endDate).once("value", function(snapshot) {
-      if (!snapshot) {
+      console.log(snapshot.val());
+      if (!snapshot.val()) {
+        console.log("No records found for given date range");
         answer = null;
       } else {
+        console.log("Records found for given date range");
         for (var date in snapshot.val()){
           answer[moment(date).format('D')] = snapshot.val()[date];
         }
-        if (callback) {
-          callback(answer);
-        }
       }
+      callback(answer);
+    }, function(err){
+      console.log("The read failed: ", err);
     }.bind(this));
   },
   loadThisMonthlyRecord: function(callback) {
@@ -162,12 +299,17 @@ var firebaseUtil = {
     var endDate = moment().format("MM-DD-YYYY");
     this.retrieveMonthlyAssessmentRecord(startDate, endDate, function(ans){
       thisMonth = ans;
-      console.log("loaded info in firebaseUtil:"+ thisMonth);
       callback();
     });
   },
   getThisMonthlyRecord: function() {
     return thisMonth;
+  },
+  saveSafetyPlanData: function() {
+    //do something here
+  },
+  retrieveSafetyPlanData: function() {
+    //do something here
   }
 };
 

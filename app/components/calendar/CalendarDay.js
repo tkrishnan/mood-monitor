@@ -3,10 +3,16 @@
 require('./Calendar.css');
 var React = require('react');
 
+var moment = require('moment');
+moment().format();
+
+var Link = require('react-router').Link;
+
 var evaluateScore = require('../../util/evaluateScore.js');
 
 var FlatButton = require('material-ui/lib/flat-button');
 var Popover = require('material-ui/lib/popover/popover');
+var RaisedButton = require('material-ui/lib/raised-button');
 
 
 var moodColors = {
@@ -56,71 +62,139 @@ var CalendarDay = React.createClass({
       flatButton: {
         maxWidth: '11%',
         minWidth: '11vw',
+        maxHeight: '5%',
         minHeight: '11vw',
-        margin: '0.75vw',
-        flex: '1'
-      }
-    }; 
-    if (!this.props.data) {
-      console.log("tile with no data");
-      var noMoodStyles = {
-        color: '#455a64',
-        padding: '1.5vw'
-      };
-      return (
-        <div className="calendarDay">
-          <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
-            <div className="tile doneTile">
-              <label>{this.props.date}</label>
-            </div>
-          </FlatButton>
-          <Popover
-          open={this.state.open}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-          targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          onRequestClose={this.handleRequestClose}>
-            <div style={noMoodStyles} className="moodPopOver">No assessment taken</div>
-          </Popover>
-        </div>
-      );
-    } else if (this.props.data == "Not Yet") {
-      console.log("tile in future");
-      return (
-        <div className="calendarDay">
-          <div className="tile futureTile">
-            <label>{this.props.date}</label>
-          </div>
-        </div>
-      );
-    } else if (this.props.data) {
-      console.log("tile with data");
-      var moodStyles = {
-        calDay: {
-        backgroundColor: moodColors[this.props.data.score.toString()], 
+        margin: '0 auto',
+        position: 'relative'
       },
-        moodPopup: {
-          color: moodColors[this.props.data.score.toString()],
-          padding: '1.5vw'
-        },
-      };
-      return (
-        <div className="calendarDay">
-          <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
-            <div style={moodStyles.calDay} className="tile dayTile"> 
-              <label>{this.props.date}</label>
-            </div>        
-          </FlatButton>
-          <Popover
-          open={this.state.open}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-          targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          onRequestClose={this.handleRequestClose}>
-            <div style={moodStyles.moodPopup} className="moodPopOver">{evaluateScore(this.props.data.score)}</div>
-          </Popover>
-        </div>
-      ); 
+      noMoodStyles: {
+        color: '#455a64',
+        fontWeight: '500',
+        padding: '5vw'
+      },
+      raisedButton: {
+        width: '40vw',
+        height: '10vw',
+        margin: '0 auto',
+        position: 'relative',
+        textAlign: 'center'
+      },
+      raisedLabel: {
+        fontSize: '3vw'
+      }
+    };
+    if ((this.props.date == parseInt(moment().format("D"))) && (this.props.currentMonth)) {
+      if ((this.props.data) && (this.props.data != "Not Yet")) {
+        var moodStyles= {
+          calDay: {
+            backgroundColor: moodColors[this.props.data.score.toString()], 
+          },
+          moodPopup: {
+            color: moodColors[this.props.data.score.toString()],
+          },
+        };
+        return (
+          <div className="calendarDay">
+            <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
+              <div style={moodStyles.calDay} className="tile dayTile currentDay"> 
+                <label>{this.props.date}</label>
+              </div>        
+            </FlatButton>
+            <Popover
+            open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+            targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            onRequestClose={this.handleRequestClose}>
+              <div style={moodStyles.moodPopup} className="moodPopOver">
+                <h2>{evaluateScore(this.props.data.score)}</h2>
+                {"score: "+this.props.data.score}
+              </div>
+            </Popover>
+          </div>
+        );  
+      } else {
+        return (
+          <div className="calendarDay">
+            <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
+              <div style={{backgroundColor: "#b0bec5"}} className="tile dayTile currentDay">
+                <label style={{color:"#37474f"}}>{this.props.date}</label>
+              </div>
+            </FlatButton>
+            <Popover
+            open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+            targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            onRequestClose={this.handleRequestClose}>
+              <div style={{padding: "5vw"}}>
+                <RaisedButton label="Take the Survey" labelStyle={styles.raisedLabel} linkButton={true} containerElement={<Link to='/assessment'/>} secondary={true} style={styles.raisedButton}/>
+              </div>
+            </Popover>
+          </div>
+        );
+      }
+    } else {
+      if (!this.props.data) {
+        return (
+          <div className="calendarDay">
+            <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
+              <div className="tile doneTile">
+                <label>{this.props.date}</label>
+              </div>
+            </FlatButton>
+            <Popover
+            open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+            targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            onRequestClose={this.handleRequestClose}>
+              <div style={styles.noMoodStyles} className="moodPopOver">
+                <h2>No assessment taken</h2>
+              </div>
+            </Popover>
+          </div>
+        );
+      } else if (this.props.data == "Not Yet") {
+        return (
+          <div className="calendarDay">
+          <div className="futureTileWrapper">
+              <div className="tile futureTile">
+                <label>{this.props.date}</label>
+              </div>
+            </div>
+          </div>
+        );
+      } else if (this.props.data) {
+        var moodStyles= {
+          calDay: {
+            backgroundColor: moodColors[this.props.data.score.toString()], 
+          },
+          moodPopup: {
+            color: moodColors[this.props.data.score.toString()],
+          },
+        };
+        return (
+          <div className="calendarDay">
+            <FlatButton style={styles.flatButton} onTouchTap={this.handleTouchTap}>
+              <div style={moodStyles.calDay} className="tile dayTile"> 
+                <label>{this.props.date}</label>
+              </div>        
+            </FlatButton>
+            <Popover
+            open={this.state.open}
+            anchorEl={this.state.anchorEl}
+            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+            targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            onRequestClose={this.handleRequestClose}>
+              <div style={moodStyles.moodPopup} className="moodPopOver">
+                <h2>{evaluateScore(this.props.data.score)}</h2>
+                {"score: "+this.props.data.score}
+              </div>
+            </Popover>
+          </div>
+        );  
+      }
     }
   }
 });

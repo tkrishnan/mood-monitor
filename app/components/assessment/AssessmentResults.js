@@ -27,17 +27,15 @@ var AssessmentResults = React.createClass({
     return {muiTheme: ThemeManager.getMuiTheme(MyRawTheme)};
   },
   getInitialState: function() {
-    return {errRetake: "", evaluation: "", suggestions: ""};
+    return {score: "", evaluation: "", suggestions: ""};
   },
   componentWillMount: function() {
     //get score and evaluation
     var evaluation;
-    firebaseUtil.getTodaysAssessmentResult(function(err, result) {
-      if (err) {
-        this.setState({evaluation: "Couldn't Retrieve Evaluation", suggestions: "none"});
-      } else if (result) {
+    firebaseUtil.getTodaysAssessmentResult(function(result) {
+      if (result) {
+        this.setState({score: result});
         evaluation = evaluateScore(result);
-        console.log(evaluation);
         this.setState({evaluation: evaluation});
         if (evaluation == "Zero Depression") {
           this.setState({suggestions: "zero"});
@@ -57,12 +55,8 @@ var AssessmentResults = React.createClass({
   },
   handleRedo: function() {
     //do when backend implemented
-    firebaseUtil.deleteAssessmentData(function(err) {
-      if (err) {
-        this.setState({errRetake: err});
-      } else {
-        this.history.pushState(null, '/dashboard');
-      }
+    firebaseUtil.deleteAssessmentData(function() {
+      this.history.pushState(null, '/dashboard');
     }.bind(this));
     //this.history.pushState(null, '/dashboard');
   },
@@ -89,8 +83,8 @@ var AssessmentResults = React.createClass({
         <div id="result">
           <h3>Your symptoms today indicate:</h3>
           <h1>{this.state.evaluation}</h1>
+          <h2>{"score: "+this.state.score}</h2>
         </div>
-        <div id="errRetake"><span>{this.state.errRetake}</span></div>
         <div id="resultBttns">
           <div className="resBttn">
             <FlatButton 

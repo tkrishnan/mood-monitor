@@ -24,13 +24,12 @@ var AssessmentContent = React.createClass({
     render: function() {
         var styles = {
             labelStyle: {
-                textAlign: 'center',
-                fontSize: '3vw',  
+                fontSize: '3.25vw',  
             },
             rootStyle: {
                 textAlign: 'center',
-                width: '40%',
-                height: '10vw',
+                width: '50%',
+                height: '12vw',
                 margin: 'auto',
                 flex: '1 2 auto'
             }
@@ -38,17 +37,17 @@ var AssessmentContent = React.createClass({
         return (
             <div id="assessContent">
                 <div id="startQuest">
-                    <h1>What is your level of depression today?</h1>
+                    <h1>How are you feeling today?</h1>
                 </div>
                 <RaisedButton
-                linkButton={true}
                 containerElement={<Link to='/assessment/question1'/>}
-                primary={true} 
-                style={styles.rootStyle} 
+                icon={<NavNext/>}
                 label="Take the Survey" 
                 labelStyle={styles.labelStyle} 
                 labelPosition="after"
-                icon={<NavNext/>}/>
+                linkButton={true}
+                primary={true} 
+                style={styles.rootStyle}/>
                 {this.props.children}
             </div>
         );
