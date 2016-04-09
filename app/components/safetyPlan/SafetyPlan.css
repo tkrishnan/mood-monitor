@@ -1,0 +1,50 @@
+/* General styling for Safety Plan Page */
+
+#safetyPlanContent {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10vw;
+  width: 100%;
+}
+
+#safetyPlan {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.planCard {
+  margin-bottom: 5vw;
+}
+
+.noData {
+  margin-top: 9vw;
+}
+
+.addFormField {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 80%;
+  padding: 0.5vw;
+  margin: 0 auto;
+}
+
+.textfieldBttns {
+  display: flex;
+  flex: 1 1 auto;
+  align-self: flex-end;
+  float: right;
+}
+
+.formActionButtons {
+  display: flex;
+  flex: 1 1 auto;
+  width: 80%;
+  margin: auto;
+  margin-top: 20vw;
+}
+
+.dataList {
+  font-size: 2.5vw;
+  text-align: center;
+}

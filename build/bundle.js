@@ -52,10 +52,10 @@
 	var AppRoutes = __webpack_require__(159);
 
 	var Router = __webpack_require__(165).Router;
-	var createBrowserHistory = __webpack_require__(498);
+	var createBrowserHistory = __webpack_require__(522);
 	var history = createBrowserHistory();
 
-	var injectTapEventPlugin = __webpack_require__(499);
+	var injectTapEventPlugin = __webpack_require__(523);
 
 	injectTapEventPlugin();
 
@@ -19679,25 +19679,26 @@
 	var Landing = __webpack_require__(465);
 	var Questions = __webpack_require__(468);
 	var SafetyContent = __webpack_require__(480);
-	var SignIn = __webpack_require__(481);
-	var SuggestionsForZero = __webpack_require__(482);
-	var SuggestionsForMinimal = __webpack_require__(484);
-	var SuggestionsForMild = __webpack_require__(485);
-	var SuggestionsForModerate = __webpack_require__(486);
-	var SuggestionsForModeratelySevere = __webpack_require__(487);
-	var SuggestionsForSevere = __webpack_require__(488);
-	var ResetPassword = __webpack_require__(489);
-	var TextMssgContent = __webpack_require__(492);
+	var SignIn = __webpack_require__(505);
+	var SuggestionsForZero = __webpack_require__(506);
+	var SuggestionsForMinimal = __webpack_require__(507);
+	var SuggestionsForMild = __webpack_require__(508);
+	var SuggestionsForModerate = __webpack_require__(509);
+	var SuggestionsForModeratelySevere = __webpack_require__(510);
+	var SuggestionsForSevere = __webpack_require__(511);
+	var ResetPassword = __webpack_require__(512);
+	var TextMssgContent = __webpack_require__(515);
 
 	var Route = __webpack_require__(165).Route;
 	var IndexRoute = __webpack_require__(165).IndexRoute;
 	var Redirect = __webpack_require__(165).Redirect;
 
-	var requireAuth = __webpack_require__(493);
-	var requireSignOut = __webpack_require__(494);
-	var requireSurvey = __webpack_require__(495);
-	var requireNotAssessed = __webpack_require__(496);
-	var retrieveThisMonthData = __webpack_require__(497);
+	var requireAuth = __webpack_require__(516);
+	var requireSignOut = __webpack_require__(517);
+	var requireSurvey = __webpack_require__(518);
+	var requireNotAssessed = __webpack_require__(519);
+	var retrieveThisMonthData = __webpack_require__(520);
+	var retrieveSafetyPlanData = __webpack_require__(521);
 
 	var AppRoutes = React.createElement(
 	  Route,
@@ -19741,7 +19742,7 @@
 	    ),
 	    React.createElement(Redirect, { from: '/assessment', to: '/dashboard' }),
 	    React.createElement(Route, { path: '/calendar', component: CalendarContent, onEnter: retrieveThisMonthData }),
-	    React.createElement(Route, { path: '/safety-plan', component: SafetyContent }),
+	    React.createElement(Route, { path: '/safety-plan', component: SafetyContent, onEnter: retrieveSafetyPlanData }),
 	    React.createElement(Route, { path: '/emergency-contacts', component: TextMssgContent })
 	  )
 	);
@@ -30415,6 +30416,7 @@
 	var dateAssessed = null;
 	var assessed = null;
 	var thisMonth = null;
+	var safetyData = null;
 
 	var surveyAnswers = {
 	  question1: null,
@@ -30644,7 +30646,7 @@
 	        }
 	      }, function (err) {
 	        console.log("The read failed: ", err);
-	      }.bind(this));
+	      });
 	    } else {
 	      console.log("Assessment today is: " + assessed);
 	      callback(assessed);
@@ -30657,7 +30659,7 @@
 	      console.log("The read was successful: ", assessmentObj);
 	    }, function (err) {
 	      console.log("The read failed: ", err);
-	    }.bind(this));
+	    });
 	  },
 	  tempSaveAssessQuest: function tempSaveAssessQuest(question, answer) {
 	    surveyAnswers[question] = answer;
@@ -30685,7 +30687,7 @@
 	        dateAssessed = null;
 	        callback();
 	      }
-	    }.bind(this));
+	    });
 	  },
 	  retrieveMonthlyAssessmentRecord: function retrieveMonthlyAssessmentRecord(startDate, endDate, callback) {
 	    var answer = {};
@@ -30703,7 +30705,7 @@
 	      callback(answer);
 	    }, function (err) {
 	      console.log("The read failed: ", err);
-	    }.bind(this));
+	    });
 	  },
 	  loadThisMonthlyRecord: function loadThisMonthlyRecord(callback) {
 	    var startDate = moment().startOf('month').format("MM-DD-YYYY");
@@ -30716,11 +30718,86 @@
 	  getThisMonthlyRecord: function getThisMonthlyRecord() {
 	    return thisMonth;
 	  },
-	  saveSafetyPlanData: function saveSafetyPlanData() {
-	    //do something here
+	  saveWarningSignData: function saveWarningSignData(model) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('warning_signs').set(model);
 	  },
-	  retrieveSafetyPlanData: function retrieveSafetyPlanData() {
-	    //do something here
+	  removeWarningSignData: function removeWarningSignData(callback) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('warning_signs').remove(function (err) {
+	      if (err) {
+	        console.log("Synchronization failed.");
+	      } else {
+	        console.log("Synchronization sucessful.");
+	        callback();
+	      }
+	    });
+	  },
+	  saveCopingStrategyData: function saveCopingStrategyData(model) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('coping_strategies').set(model);
+	  },
+	  removeCopingStrategyData: function removeCopingStrategyData(callback) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('coping_strategies').remove(function (err) {
+	      if (err) {
+	        console.log("Synchronization failed.");
+	      } else {
+	        console.log("Synchronization successful");
+	        callback();
+	      }
+	    });
+	  },
+	  saveDistractionData: function saveDistractionData(model) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('distractions').set(model);
+	  },
+	  removeDistractionData: function removeDistractionData(callback) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('distractions').remove(function (err) {
+	      if (err) {
+	        console.log("Synchronization failed.");
+	      } else {
+	        console.log("Synchronization successful.");
+	        callback();
+	      }
+	    });
+	  },
+	  saveSafetyMeasureData: function saveSafetyMeasureData(model) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('safety_measures').set(model);
+	  },
+	  removeSafetyMeasureData: function removeSafetyMeasureData(callback) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('safety_measures').remove(function (err) {
+	      if (err) {
+	        console.log("Synchronization failed.");
+	      } else {
+	        console.log("Synchronization successful.");
+	        callback();
+	      }
+	    });
+	  },
+	  saveReasonToLiveData: function saveReasonToLiveData(model) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('reasons_to_live').set(model);
+	  },
+	  removeReasonToLiveData: function removeReasonToLiveData(callback) {
+	    ref.child('safety_plan').child(cachedUser.uid).child('reasons_to_live').remove(function (err) {
+	      if (err) {
+	        console.log("Synchronization failed.");
+	      } else {
+	        console.log("Synchronization successful.");
+	        callback();
+	      }
+	    });
+	  },
+	  loadSafetyPlanData: function loadSafetyPlanData(callback) {
+	    ref.child('safety_plan').child(cachedUser.uid).once('value', function (snapshot) {
+	      if (!snapshot.val()) {
+	        console.log("No safety plan data saved for user");
+	      } else {
+	        console.log("Safety plan data found for user");
+	        safetyData = snapshot.val();
+	      }
+	      callback();
+	    }, function (err) {
+	      console.log("The read failed: ", err);
+	    });
+	  },
+	  getSafetyPlanData: function getSafetyPlanData() {
+	    return safetyData;
 	  }
 	};
 
@@ -57933,15 +58010,16 @@
 
 	'use strict';
 
+	__webpack_require__(481);
 	var React = __webpack_require__(1);
 
 	var firebaseUtil = __webpack_require__(278);
 
-	var Divider = __webpack_require__(428);
-	var Form = __webpack_require__(380).Form;
-	var FormsyText = __webpack_require__(387);
-	var RaisedButton = __webpack_require__(399);
-	var TextField = __webpack_require__(388);
+	var WarningSigns = __webpack_require__(483);
+	var CopingStrategies = __webpack_require__(501);
+	var Distractions = __webpack_require__(502);
+	var SafetyMeasures = __webpack_require__(503);
+	var ReasonsToLive = __webpack_require__(504);
 
 	var ThemeManager = __webpack_require__(418);
 	var MyRawTheme = __webpack_require__(419);
@@ -57955,19 +58033,31 @@
 	    getChildContext: function getChildContext() {
 	        return { muiTheme: ThemeManager.getMuiTheme(MyRawTheme) };
 	    },
+	    getInitialState: function getInitialState() {
+	        return { warningSigns: null, copingStrategies: null, distractions: null, safetyMeasures: null, reasonsToLive: null };
+	    },
+	    componentWillMount: function componentWillMount() {
+	        var safetyPlanData = firebaseUtil.getSafetyPlanData();
+	        if (safetyPlanData) {
+	            this.setState({ warningSigns: safetyPlanData.warning_signs });
+	            this.setState({ copingStrategies: safetyPlanData.coping_strategies });
+	            this.setState({ distractions: safetyPlanData.distractions });
+	            this.setState({ safetyMeasures: safetyPlanData.safety_measures });
+	            this.setState({ reasonsToLive: safetyPlanData.reasons_to_live });
+	        }
+	    },
 	    render: function render() {
 	        return React.createElement(
 	            'div',
-	            { id: 'safetyContent' },
+	            { id: 'safetyPlanContent' },
 	            React.createElement(
-	                'h2',
-	                null,
-	                'Safety Plan Page'
-	            ),
-	            React.createElement(
-	                'span',
-	                null,
-	                ' Hello, I am a placeholder for the safety plan page'
+	                'div',
+	                { id: 'safetyPlan' },
+	                React.createElement(WarningSigns, { initialData: this.state.warningSigns }),
+	                React.createElement(CopingStrategies, { initialData: this.state.copingStrategies }),
+	                React.createElement(Distractions, { initialData: this.state.distractions }),
+	                React.createElement(SafetyMeasures, { initialData: this.state.safetyMeasures }),
+	                React.createElement(ReasonsToLive, { initialData: this.state.reasonsToLive })
 	            )
 	        );
 	    }
@@ -57979,23 +58069,69 @@
 /* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(482);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(164)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./SafetyPlan.css", function() {
+				var newContent = require("!!./../../../node_modules/css-loader/index.js!./SafetyPlan.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 482 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(163)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "/* General styling for Safety Plan Page */\n\n#safetyPlanContent {\n  display: flex;\n  flex-direction: column;\n  margin-top: 10vw;\n  width: 100%;\n}\n\n#safetyPlan {\n  width: 90%;\n  margin: 0 auto;\n}\n\n.planCard {\n  margin-bottom: 5vw;\n}\n\n.noData {\n  margin-top: 9vw;\n}\n\n.addFormField {\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  width: 80%;\n  padding: 0.5vw;\n  margin: 0 auto;\n}\n\n.textfieldBttns {\n  display: flex;\n  flex: 1 1 auto;\n  align-self: flex-end;\n  float: right;\n}\n\n.formActionButtons {\n  display: flex;\n  flex: 1 1 auto;\n  width: 80%;\n  margin: auto;\n  margin-top: 20vw;\n}\n\n.dataList {\n  font-size: 2.5vw;\n  text-align: center;\n}", ""]);
+
+	// exports
+
+
+/***/ },
+/* 483 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
+	__webpack_require__(481);
 	var React = __webpack_require__(1);
-
-	var History = __webpack_require__(165).History;
-	var Link = __webpack_require__(165).Link;
 
 	var firebaseUtil = __webpack_require__(278);
 
+	var Avatar = __webpack_require__(484);
+	var Card = __webpack_require__(485);
+	var CardHeader = __webpack_require__(489);
+	var CardText = __webpack_require__(495);
+	var FlatButton = __webpack_require__(423);
 	var Form = __webpack_require__(380).Form;
 	var FormsyText = __webpack_require__(387);
+	var List = __webpack_require__(496);
+	var ListItem = __webpack_require__(497);
 	var RaisedButton = __webpack_require__(399);
 
-	var SignIn = React.createClass({
-	  displayName: 'SignIn',
+	var Colors = __webpack_require__(262);
 
-	  mixins: [History],
+	var WarningSigns = React.createClass({
+	  displayName: 'WarningSigns',
+
 	  childContextTypes: {
 	    muiTheme: React.PropTypes.object
 	  },
@@ -58006,179 +58142,422 @@
 	    return { muiTheme: this.context.muiTheme };
 	  },
 	  getInitialState: function getInitialState() {
-	    return {
-	      muiTheme: this.context.muiTheme,
-	      canSubmit: false,
-	      loggedIn: false,
-	      errorMessage: ""
-	    };
+	    return { muiTheme: this.context.muiTheme, onForm: false, extraFields: null, dataFields: null, dataList: this.props.initialData };
 	  },
-	  enableButton: function enableButton() {
-	    this.setState({
-	      canSubmit: true
-	    });
+	  toggleForm: function toggleForm() {
+	    //render form view and set transitional form states if needed
+	    this.setState({ onForm: true });
+	    if (this.state.dataList) {
+	      this.setState({ extraFields: [1] });
+	      this.setState({ dataFields: this.state.dataList });
+	    }
 	  },
-	  disableButton: function disableButton() {
-	    this.setState({
-	      canSubmit: false
-	    });
+	  handleAdd: function handleAdd() {
+	    //add extra form field
+	    if (!this.state.extraFields) {
+	      this.setState({ extraFields: [1] });
+	    } else {
+	      this.setState({ extraFields: this.state.extraFields.concat([this.state.extraFields[this.state.extraFields.length - 1] + 1]) });
+	    }
 	  },
-	  handleSubmitForm: function handleSubmitForm(model) {
-	    firebaseUtil.signInUser(model, function (err, result) {
-	      if (err) {
-	        this.setState({ errorMessage: err });
-	      } else if (result) {
-	        this.setState({ errorMessage: err });
-	        this.history.pushState(null, '/dashboard');
+	  handleDelete: function handleDelete() {
+	    //remove form field from either extraFields or dataFields states
+	    if (this.state.extraFields) {
+	      if (this.state.extraFields.length == 1) {
+	        this.setState({ extraFields: null });
+	      } else {
+	        this.setState({ extraFields: this.state.extraFields.slice(0, this.state.extraFields.length - 1) });
 	      }
-	    }.bind(this));
+	    } else {
+	      if (this.state.dataFields) {
+	        if (this.state.dataFields.length == 1) {
+	          this.setState({ dataFields: null });
+	        } else {
+	          this.setState({ dataFields: this.state.dataFields.slice(0, this.state.dataFields.length - 1) });
+	        }
+	      }
+	    }
+	  },
+	  handleCancel: function handleCancel() {
+	    //go back to data view and reset transitional form states
+	    this.setState({ onForm: false });
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  handleSubmit: function handleSubmit(model) {
+	    //do something here
+	    var keysList = Object.keys(model);
+	    //check if no data was submitted
+	    var noData = true;
+	    for (var i = 0; i < keysList.length; i++) {
+	      if (model[keysList[i]]) {
+	        noData = false;
+	      }
+	    }
+	    //if no data submitted, empty the warning signs data in DB
+	    if (noData) {
+	      firebaseUtil.removeWarningSignData(function () {
+	        this.setState({ dataList: null });
+	        this.setState({ onForm: false });
+	      }.bind(this));
+	      //if data submitted, set warning signs data in DB
+	    } else {
+	        var data = [];
+	        for (var key in model) {
+	          data.push(model[key]);
+	        }
+	        firebaseUtil.saveWarningSignData(data);
+	        this.setState({ dataList: data });
+	        this.setState({ onForm: false });
+	      }
+	    //reset transitional form states
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
 	  },
 	  render: function render() {
 	    var styles = {
-	      form: {
+	      cardHeader: {
+	        general: {
+	          backgroundColor: Colors.indigo400,
+	          height: '17vw'
+	        },
+	        title: {
+	          fontSize: '4vw',
+	          paddingBottom: '1vw'
+	        },
+	        subtitle: {
+	          fontSize: '3vw',
+	          fontWeight: '300'
+	        }
+	      },
+	      cardTextNone: {
 	        display: 'flex',
-	        flexDirection: 'column'
+	        height: '25vw',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50,
+	        fontSize: '4vw',
+	        fontWeight: '300',
+	        textAlign: 'center'
 	      },
-	      textField: {
-	        flex: '1 1 auto'
+	      cardTextData: {
+	        display: 'flex',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50
 	      },
-	      submitBttn: {
-	        flex: '1 1 auto',
-	        width: '80%',
-	        height: '10vw',
-	        margin: 'auto',
-	        marginLeft: 'auto',
-	        marginRight: 'auto',
-	        marginTop: '5vw',
-	        marginBottom: '5vw'
+	      editButton: {
+	        width: '5%',
+	        bottom: '5',
+	        right: '5',
+	        position: 'absolute',
+	        alignSelf: 'flex-end'
 	      },
-	      labelStyle: {
+	      editLabel: {
 	        fontSize: '4vw'
+	      },
+	      cardTextForm: {
+	        padding: '1vw',
+	        backgroundColor: Colors.indigo50
+	      },
+	      form: {
+	        general: {
+	          display: 'flex',
+	          flexDirection: 'column',
+	          flex: '1 1 auto'
+	        },
+	        formActionBttns: {
+	          general: {
+	            flex: '1 1 auto',
+	            margin: '2vw',
+	            width: '40%'
+	          },
+	          labelStyle: {
+	            fontSize: '3vw',
+	            color: Colors.grey100
+	          }
+	        }
 	      }
 	    };
-	    if (this.state.errorMessage == "The specified password is incorrect.") {
-	      return React.createElement(
-	        'div',
-	        { id: 'signIn' },
-	        React.createElement(
-	          'div',
-	          { className: 'app_title' },
-	          React.createElement(
-	            'h1',
-	            null,
-	            'Mood Monitor'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'err_mssg' },
-	          React.createElement(
-	            'span',
-	            null,
-	            this.state.errorMessage
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'formContainer' },
-	          React.createElement(
-	            Form,
-	            { onValidSubmit: this.handleSubmitForm, onValid: this.enableButton, onInvalid: this.disableButton, style: styles.form },
-	            React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
-	            React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
-	            React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit }),
+	    if (this.state.onForm) {
+	      if (this.state.dataFields) {
+	        var newStart = this.state.dataFields.length;
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'warningSigns', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Warning Signs',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Thought, Image, Mood, Situation, Behavior',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
 	            React.createElement(
-	              'div',
-	              { className: 'resetLink' },
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
 	              React.createElement(
-	                Link,
-	                { to: '/reset-password' },
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "warningSign" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a warning sign that indicates a crisis might be develping.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "warningSign" + (newStart + i).toString(),
+	                      hintText: 'Please describe a warning sign that indicates a crisis might be develping.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
 	                React.createElement(
-	                  'span',
-	                  null,
-	                  'Forgot Your Password?'
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
 	                )
 	              )
 	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'warningSigns', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Warning Signs',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Thought, Image, Mood, Situation, Behavior',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "warningSign" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a warning sign that indicates a crisis might be develping.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      } else {
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'warningSigns', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Warning Signs',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Thought, Image, Mood, Situation, Behavior',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'warningSign1',
+	                    hintText: 'Please describe a warning sign that indicates a crisis might be develping.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "warningSign" + (1 + i).toString(),
+	                      hintText: 'Please describe a warning sign that indicates a crisis might be develping.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'warningSigns', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Warning Signs',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Thought, Image, Mood, Situation, Behavior',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'warningSign1',
+	                    hintText: 'Please describe a warning sign that indicates a crisis might be develping.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    textAreaStyle: { color: Colors.indigo900 },
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      }
+	    } else {
+	      if (this.state.dataList) {
+	        return React.createElement(
+	          Card,
+	          { id: 'warningSigns', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Warning Signs',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Thought, Image, Mood, Situation, Behavior',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextData, expandable: true },
+	            React.createElement(
+	              List,
+	              { style: { flex: '1 1 auto', backgroundColor: Colors.indigo50 } },
+	              this.state.dataList.map(function (i) {
+	                return React.createElement(
+	                  ListItem,
+	                  { disabled: true, leftAvatar: React.createElement(
+	                      Avatar,
+	                      { color: Colors.indigo900, backgroundColor: Colors.cyan400 },
+	                      this.state.dataList.indexOf(i) + 1
+	                    ) },
+	                  React.createElement(
+	                    'div',
+	                    { className: 'data' },
+	                    i
+	                  )
+	                );
+	              }.bind(this))
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
 	          )
-	        )
-	      );
+	        );
+	      } else {
+	        return React.createElement(
+	          Card,
+	          { id: 'warningSigns', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Warning Signs',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Thought, Image, Mood, Situation, Behavior',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextNone, expandable: true },
+	            React.createElement(
+	              'div',
+	              { className: 'noData' },
+	              'No warning signs have been saved'
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      }
 	    }
-	    return React.createElement(
-	      'div',
-	      { id: 'signIn' },
-	      React.createElement(
-	        'div',
-	        { className: 'app_title' },
-	        React.createElement(
-	          'h1',
-	          null,
-	          'Mood Monitor'
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'err_mssg' },
-	        React.createElement(
-	          'span',
-	          null,
-	          this.state.errorMessage
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'formContainer' },
-	        React.createElement(
-	          Form,
-	          { onValidSubmit: this.handleSubmitForm, onValid: this.enableButton, onInvalid: this.disableButton, style: styles.form },
-	          React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
-	          React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
-	          React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
-	        )
-	      )
-	    );
 	  }
 	});
 
-	module.exports = SignIn;
+	module.exports = WarningSigns;
 
 /***/ },
-/* 482 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var React = __webpack_require__(1);
-
-	var Divider = __webpack_require__(428);
-	var Paper = __webpack_require__(416);
-	var Avatar = __webpack_require__(483);
-
-	var ThemeManager = __webpack_require__(418);
-	var MyRawTheme = __webpack_require__(419);
-
-	var SuggestionsForZero = React.createClass({
-	  displayName: 'SuggestionsForZero',
-
-	  childContextTypes: {
-	    muiTheme: React.PropTypes.object
-	  },
-	  getChildContext: function getChildContext() {
-	    return { muiTheme: ThemeManager.getMuiTheme(MyRawTheme) };
-	  },
-	  render: function render() {
-	    return React.createElement(
-	      'div',
-	      null,
-	      'Suggestions For Zero Depression Placeholder'
-	    );
-	  }
-	});
-
-	module.exports = SuggestionsForZero;
-
-/***/ },
-/* 483 */
+/* 484 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58362,7 +58741,3831 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 484 */
+/* 485 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _paper = __webpack_require__(416);
+
+	var _paper2 = _interopRequireDefault(_paper);
+
+	var _stylePropable = __webpack_require__(219);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _cardExpandable = __webpack_require__(486);
+
+	var _cardExpandable2 = _interopRequireDefault(_cardExpandable);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var Card = _react2.default.createClass({
+	  displayName: 'Card',
+
+	  propTypes: {
+	    /**
+	     * Whether a click on this card component expands the card. Can be set on any child of the Card component.
+	     */
+	    actAsExpander: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Can be used to render elements inside the Card.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * Whether this card component is expandable. Can be set on any child of the Card component.
+	     */
+	    expandable: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Whether this card is initially expanded.
+	     */
+	    initiallyExpanded: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Fired when the expandable state changes.
+	     */
+	    onExpandChange: _react2.default.PropTypes.func,
+
+	    /**
+	     * Whether this card component include a button to expand the card. CardTitle,
+	     * CardHeader and CardActions implement showExpandableButton. Any child component
+	     * of Card can implements showExpandableButton or forwards the property to a child
+	     * component supporting it.
+	     */
+	    showExpandableButton: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      expandable: false,
+	      initiallyExpanded: false,
+	      actAsExpander: false
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      expanded: this.props.initiallyExpanded ? true : false
+	    };
+	  },
+	  _onExpandable: function _onExpandable(event) {
+	    event.preventDefault();
+	    var newExpandedState = !(this.state.expanded === true);
+	    this.setState({ expanded: newExpandedState });
+	    if (this.props.onExpandChange) this.props.onExpandChange(newExpandedState);
+	  },
+	  render: function render() {
+	    var _this = this;
+
+	    var lastElement = undefined;
+	    var newChildren = _react2.default.Children.map(this.props.children, function (currentChild) {
+	      var doClone = false;
+	      var newChild = undefined;
+	      var newProps = {};
+	      var element = currentChild;
+	      if (!currentChild || !currentChild.props) {
+	        return null;
+	      }
+	      if (_this.state.expanded === false && currentChild.props.expandable === true) return;
+	      if (currentChild.props.actAsExpander === true) {
+	        doClone = true;
+	        newProps.onTouchTap = _this._onExpandable;
+	        newProps.style = _this.mergeStyles({ cursor: 'pointer' }, currentChild.props.style);
+	      }
+	      if (currentChild.props.showExpandableButton === true) {
+	        doClone = true;
+	        newChild = _react2.default.createElement(_cardExpandable2.default, { expanded: _this.state.expanded, onExpanding: _this._onExpandable });
+	      }
+	      if (doClone) {
+	        element = _react2.default.cloneElement(currentChild, newProps, currentChild.props.children, newChild);
+	      }
+	      return element;
+	    }, this);
+
+	    // If the last element is text or a title we should add
+	    // 8px padding to the bottom of the card
+	    var addBottomPadding = lastElement && (lastElement.type.displayName === 'CardText' || lastElement.type.displayName === 'CardTitle');
+	    var _props = this.props;
+	    var style = _props.style;
+
+	    var other = _objectWithoutProperties(_props, ['style']);
+
+	    var mergedStyles = this.mergeStyles({
+	      overflow: 'hidden',
+	      zIndex: 1
+	    }, style);
+
+	    return _react2.default.createElement(
+	      _paper2.default,
+	      _extends({}, other, { style: mergedStyles }),
+	      _react2.default.createElement(
+	        'div',
+	        { style: { paddingBottom: addBottomPadding ? 8 : 0 } },
+	        newChildren
+	      )
+	    );
+	  }
+	});
+
+	exports.default = Card;
+	module.exports = exports['default'];
+
+/***/ },
+/* 486 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _keyboardArrowUp = __webpack_require__(487);
+
+	var _keyboardArrowUp2 = _interopRequireDefault(_keyboardArrowUp);
+
+	var _keyboardArrowDown = __webpack_require__(488);
+
+	var _keyboardArrowDown2 = _interopRequireDefault(_keyboardArrowDown);
+
+	var _iconButton = __webpack_require__(432);
+
+	var _iconButton2 = _interopRequireDefault(_iconButton);
+
+	var _stylePropable = __webpack_require__(219);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _getMuiTheme = __webpack_require__(244);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _contextPure = __webpack_require__(393);
+
+	var _contextPure2 = _interopRequireDefault(_contextPure);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CardExpandable = _react2.default.createClass({
+	  displayName: 'CardExpandable',
+
+	  propTypes: {
+	    expanded: _react2.default.PropTypes.bool,
+	    onExpanding: _react2.default.PropTypes.func.isRequired,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default, _contextPure2.default],
+
+	  statics: {
+	    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+	      return {
+	        isRtl: muiTheme.isRtl
+	      };
+	    },
+	    getChildrenClasses: function getChildrenClasses() {
+	      return [_iconButton2.default];
+	    }
+	  },
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  getStyles: function getStyles() {
+	    var contextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+	    var directionStyle = contextKeys.isRtl ? {
+	      left: 4
+	    } : {
+	      right: 4
+	    };
+
+	    return {
+	      root: this.mergeStyles({
+	        top: 0,
+	        bottom: 0,
+	        margin: 'auto',
+	        position: 'absolute'
+	      }, directionStyle)
+	    };
+	  },
+	  render: function render() {
+	    var styles = this.getStyles();
+
+	    var expandable = undefined;
+	    if (this.props.expanded === true) expandable = _react2.default.createElement(_keyboardArrowUp2.default, null);else expandable = _react2.default.createElement(_keyboardArrowDown2.default, null);
+
+	    var mergedStyles = this.mergeStyles(styles.root, this.props.style);
+
+	    var expandableBtn = _react2.default.createElement(
+	      _iconButton2.default,
+	      {
+	        style: mergedStyles,
+	        onTouchTap: this.props.onExpanding
+	      },
+	      expandable
+	    );
+
+	    return expandableBtn;
+	  }
+	});
+
+	exports.default = CardExpandable;
+	module.exports = exports['default'];
+
+/***/ },
+/* 487 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(215);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _svgIcon = __webpack_require__(218);
+
+	var _svgIcon2 = _interopRequireDefault(_svgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var HardwareKeyboardArrowUp = _react2.default.createClass({
+	  displayName: 'HardwareKeyboardArrowUp',
+
+	  mixins: [_reactAddonsPureRenderMixin2.default],
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      _svgIcon2.default,
+	      this.props,
+	      _react2.default.createElement('path', { d: 'M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z' })
+	    );
+	  }
+	});
+
+	exports.default = HardwareKeyboardArrowUp;
+	module.exports = exports['default'];
+
+/***/ },
+/* 488 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(215);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _svgIcon = __webpack_require__(218);
+
+	var _svgIcon2 = _interopRequireDefault(_svgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var HardwareKeyboardArrowDown = _react2.default.createClass({
+	  displayName: 'HardwareKeyboardArrowDown',
+
+	  mixins: [_reactAddonsPureRenderMixin2.default],
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      _svgIcon2.default,
+	      this.props,
+	      _react2.default.createElement('path', { d: 'M7.41 7.84L12 12.42l4.59-4.58L18 9.25l-6 6-6-6z' })
+	    );
+	  }
+	});
+
+	exports.default = HardwareKeyboardArrowDown;
+	module.exports = exports['default'];
+
+/***/ },
+/* 489 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _styles = __webpack_require__(490);
+
+	var _styles2 = _interopRequireDefault(_styles);
+
+	var _avatar = __webpack_require__(484);
+
+	var _avatar2 = _interopRequireDefault(_avatar);
+
+	var _stylePropable = __webpack_require__(219);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _getMuiTheme = __webpack_require__(244);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CardHeader = _react2.default.createClass({
+	  displayName: 'CardHeader',
+
+	  propTypes: {
+	    actAsExpander: _react2.default.PropTypes.bool,
+	    avatar: _react2.default.PropTypes.node,
+	    children: _react2.default.PropTypes.node,
+	    expandable: _react2.default.PropTypes.bool,
+	    showExpandableButton: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+	    subtitle: _react2.default.PropTypes.node,
+	    subtitleColor: _react2.default.PropTypes.string,
+	    subtitleStyle: _react2.default.PropTypes.object,
+	    textStyle: _react2.default.PropTypes.object,
+	    title: _react2.default.PropTypes.node,
+	    titleColor: _react2.default.PropTypes.string,
+	    titleStyle: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      titleColor: _styles2.default.Colors.darkBlack,
+	      subtitleColor: _styles2.default.Colors.lightBlack,
+	      avatar: null
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  getStyles: function getStyles() {
+	    return {
+	      root: {
+	        height: 72,
+	        padding: 16,
+	        fontWeight: _styles2.default.Typography.fontWeightMedium,
+	        boxSizing: 'border-box',
+	        position: 'relative'
+	      },
+	      text: {
+	        display: 'inline-block',
+	        verticalAlign: 'top'
+	      },
+	      avatar: {
+	        marginRight: 16
+	      },
+	      title: {
+	        color: this.props.titleColor,
+	        display: 'block',
+	        fontSize: 15
+	      },
+	      subtitle: {
+	        color: this.props.subtitleColor,
+	        display: 'block',
+	        fontSize: 14
+	      }
+	    };
+	  },
+	  render: function render() {
+	    var styles = this.getStyles();
+	    var rootStyle = this.mergeStyles(styles.root, this.props.style);
+	    var textStyle = this.mergeStyles(styles.text, this.props.textStyle);
+	    var titleStyle = this.mergeStyles(styles.title, this.props.titleStyle);
+	    var subtitleStyle = this.mergeStyles(styles.subtitle, this.props.subtitleStyle);
+
+	    var avatar = this.props.avatar;
+	    if (_react2.default.isValidElement(this.props.avatar)) {
+	      var avatarMergedStyle = this.mergeStyles(styles.avatar, avatar.props.style);
+	      avatar = _react2.default.cloneElement(avatar, { style: avatarMergedStyle });
+	    } else if (avatar !== null) {
+	      avatar = _react2.default.createElement(_avatar2.default, { src: this.props.avatar, style: styles.avatar });
+	    }
+
+	    return _react2.default.createElement(
+	      'div',
+	      _extends({}, this.props, { style: this.prepareStyles(rootStyle) }),
+	      avatar,
+	      _react2.default.createElement(
+	        'div',
+	        { style: this.prepareStyles(textStyle) },
+	        _react2.default.createElement(
+	          'span',
+	          { style: this.prepareStyles(titleStyle) },
+	          this.props.title
+	        ),
+	        _react2.default.createElement(
+	          'span',
+	          { style: this.prepareStyles(subtitleStyle) },
+	          this.props.subtitle
+	        )
+	      ),
+	      this.props.children
+	    );
+	  }
+	});
+
+	exports.default = CardHeader;
+	module.exports = exports['default'];
+
+/***/ },
+/* 490 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.ZIndex = exports.getMuiTheme = exports.ThemeDecorator = exports.DarkRawTheme = exports.LightRawTheme = exports.lightBaseTheme = exports.Typography = exports.Transitions = exports.ThemeManager = exports.Spacing = exports.Colors = exports.AutoPrefix = undefined;
+
+	var _autoPrefix = __webpack_require__(221);
+
+	var _autoPrefix2 = _interopRequireDefault(_autoPrefix);
+
+	var _colors = __webpack_require__(262);
+
+	var _colors2 = _interopRequireDefault(_colors);
+
+	var _spacing = __webpack_require__(265);
+
+	var _spacing2 = _interopRequireDefault(_spacing);
+
+	var _themeManager = __webpack_require__(418);
+
+	var _themeManager2 = _interopRequireDefault(_themeManager);
+
+	var _transitions = __webpack_require__(243);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _typography = __webpack_require__(403);
+
+	var _typography2 = _interopRequireDefault(_typography);
+
+	var _lightRawTheme = __webpack_require__(491);
+
+	var _lightRawTheme2 = _interopRequireDefault(_lightRawTheme);
+
+	var _lightBaseTheme = __webpack_require__(264);
+
+	var _lightBaseTheme2 = _interopRequireDefault(_lightBaseTheme);
+
+	var _darkRawTheme = __webpack_require__(492);
+
+	var _darkRawTheme2 = _interopRequireDefault(_darkRawTheme);
+
+	var _darkBaseTheme = __webpack_require__(493);
+
+	var _darkBaseTheme2 = _interopRequireDefault(_darkBaseTheme);
+
+	var _themeDecorator = __webpack_require__(494);
+
+	var _themeDecorator2 = _interopRequireDefault(_themeDecorator);
+
+	var _getMuiTheme = __webpack_require__(244);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	var _zIndex = __webpack_require__(266);
+
+	var _zIndex2 = _interopRequireDefault(_zIndex);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.AutoPrefix = _autoPrefix2.default;
+	exports.Colors = _colors2.default;
+	exports.Spacing = _spacing2.default;
+	exports.ThemeManager = _themeManager2.default;
+	exports.Transitions = _transitions2.default;
+	exports.Typography = _typography2.default;
+	exports.lightBaseTheme = _lightBaseTheme2.default;
+	exports.LightRawTheme = _lightRawTheme2.default;
+	exports.DarkRawTheme = _darkRawTheme2.default;
+	exports.ThemeDecorator = _themeDecorator2.default;
+	exports.getMuiTheme = _getMuiTheme2.default;
+	exports.ZIndex = _zIndex2.default;
+	exports.default = {
+	  AutoPrefix: _autoPrefix2.default,
+	  Colors: _colors2.default,
+	  Spacing: _spacing2.default,
+	  ThemeManager: _themeManager2.default,
+	  Transitions: _transitions2.default,
+	  Typography: _typography2.default,
+	  lightBaseTheme: _lightBaseTheme2.default,
+	  LightRawTheme: _lightRawTheme2.default,
+	  darkBaseTheme: _darkBaseTheme2.default,
+	  DarkRawTheme: _darkRawTheme2.default,
+	  ThemeDecorator: _themeDecorator2.default,
+	  getMuiTheme: _getMuiTheme2.default,
+	  ZIndex: _zIndex2.default
+	};
+
+/***/ },
+/* 491 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _lightBaseTheme = __webpack_require__(264);
+
+	var _lightBaseTheme2 = _interopRequireDefault(_lightBaseTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _lightBaseTheme2.default;
+
+	// import deprecatedExport from '../../utils/deprecatedExport';
+
+	// export default deprecatedExport(
+	//   lightBaseTheme,
+	//   'material-ui/lib/styles/raw-themes/light-raw-theme',
+	//   'material-ui/lib/styles/baseThemes/lightBaseTheme'
+	// );
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 492 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _darkBaseTheme = __webpack_require__(493);
+
+	var _darkBaseTheme2 = _interopRequireDefault(_darkBaseTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _darkBaseTheme2.default;
+
+	// import deprecatedExport from '../../utils/deprecatedExport';
+
+	// export default deprecatedExport(
+	//   darkBaseTheme,
+	//   'material-ui/lib/styles/raw-themes/dark-raw-theme',
+	//   'material-ui/lib/styles/baseThemes/darkBaseTheme'
+	// );
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 493 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _colors = __webpack_require__(262);
+
+	var _colors2 = _interopRequireDefault(_colors);
+
+	var _colorManipulator = __webpack_require__(263);
+
+	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
+
+	var _spacing = __webpack_require__(265);
+
+	var _spacing2 = _interopRequireDefault(_spacing);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	  spacing: _spacing2.default,
+	  fontFamily: 'Roboto, sans-serif',
+	  palette: {
+	    primary1Color: _colors2.default.cyan700,
+	    primary2Color: _colors2.default.cyan700,
+	    primary3Color: _colors2.default.grey600,
+	    accent1Color: _colors2.default.pinkA200,
+	    accent2Color: _colors2.default.pinkA400,
+	    accent3Color: _colors2.default.pinkA100,
+	    textColor: _colors2.default.fullWhite,
+	    alternateTextColor: '#303030',
+	    canvasColor: '#303030',
+	    borderColor: _colorManipulator2.default.fade(_colors2.default.fullWhite, 0.3),
+	    disabledColor: _colorManipulator2.default.fade(_colors2.default.fullWhite, 0.3),
+	    pickerHeaderColor: _colorManipulator2.default.fade(_colors2.default.fullWhite, 0.12),
+	    clockCircleColor: _colorManipulator2.default.fade(_colors2.default.fullWhite, 0.12)
+	  }
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 494 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (customTheme) {
+
+	  return function (Component) {
+
+	    return _react2.default.createClass({
+
+	      childContextTypes: {
+	        muiTheme: _react2.default.PropTypes.object
+	      },
+
+	      getChildContext: function getChildContext() {
+	        return {
+	          muiTheme: customTheme
+	        };
+	      },
+	      render: function render() {
+	        return _react2.default.createElement(Component, this.props);
+	      }
+	    });
+	  };
+	};
+
+	module.exports = exports['default'];
+
+/***/ },
+/* 495 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _stylePropable = __webpack_require__(219);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _getMuiTheme = __webpack_require__(244);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var CardText = _react2.default.createClass({
+	  displayName: 'CardText',
+
+	  propTypes: {
+	    actAsExpander: _react2.default.PropTypes.bool,
+	    children: _react2.default.PropTypes.node,
+	    color: _react2.default.PropTypes.string,
+	    expandable: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_stylePropable2.default],
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  getStyles: function getStyles() {
+	    var themeVariables = this.state.muiTheme.cardText;
+	    return {
+	      root: {
+	        padding: 16,
+	        fontSize: '14px',
+	        color: this.props.color ? this.props.color : themeVariables.textColor
+	      }
+	    };
+	  },
+	  render: function render() {
+	    var styles = this.getStyles();
+	    var rootStyle = this.mergeStyles(styles.root, this.props.style);
+
+	    return _react2.default.createElement(
+	      'div',
+	      _extends({}, this.props, { style: this.prepareStyles(rootStyle) }),
+	      this.props.children
+	    );
+	  }
+	});
+
+	exports.default = CardText;
+	module.exports = exports['default'];
+
+/***/ },
+/* 496 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(215);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _propTypes = __webpack_require__(417);
+
+	var _propTypes2 = _interopRequireDefault(_propTypes);
+
+	var _stylePropable = __webpack_require__(219);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _typography = __webpack_require__(403);
+
+	var _typography2 = _interopRequireDefault(_typography);
+
+	var _paper = __webpack_require__(416);
+
+	var _paper2 = _interopRequireDefault(_paper);
+
+	var _getMuiTheme = __webpack_require__(244);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var List = _react2.default.createClass({
+	  displayName: 'List',
+
+	  propTypes: {
+	    /**
+	     * These are usually ListItems that are passed to
+	     * be part of the list.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * If true, the subheader will be indented by 72px.
+	     */
+	    insetSubheader: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object,
+
+	    /**
+	     * The subheader string that will be displayed at the top of the list.
+	     */
+	    subheader: _react2.default.PropTypes.node,
+
+	    /**
+	     * The style object to override subheader styles.
+	     */
+	    subheaderStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * The zDepth prop passed to the Paper element inside list.
+	     */
+	    zDepth: _propTypes2.default.zDepth
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      insetSubheader: false,
+	      zDepth: 0
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  render: function render() {
+	    var _props = this.props;
+	    var children = _props.children;
+	    var insetSubheader = _props.insetSubheader;
+	    var style = _props.style;
+	    var subheader = _props.subheader;
+	    var subheaderStyle = _props.subheaderStyle;
+	    var zDepth = _props.zDepth;
+
+	    var other = _objectWithoutProperties(_props, ['children', 'insetSubheader', 'style', 'subheader', 'subheaderStyle', 'zDepth']);
+
+	    var styles = {
+	      root: {
+	        padding: 0,
+	        paddingBottom: 8,
+	        paddingTop: subheader ? 0 : 8
+	      },
+
+	      subheader: {
+	        color: _typography2.default.textLightBlack,
+	        fontSize: 14,
+	        fontWeight: _typography2.default.fontWeightMedium,
+	        lineHeight: '48px',
+	        paddingLeft: insetSubheader ? 72 : 16
+	      }
+	    };
+
+	    var subheaderElement = undefined;
+	    if (subheader) {
+	      var mergedSubheaderStyles = this.mergeStyles(styles.subheader, subheaderStyle);
+	      subheaderElement = _react2.default.createElement(
+	        'div',
+	        { style: this.prepareStyles(mergedSubheaderStyles) },
+	        subheader
+	      );
+	    }
+
+	    return _react2.default.createElement(
+	      _paper2.default,
+	      _extends({}, other, {
+	        style: this.mergeStyles(styles.root, style),
+	        zDepth: zDepth
+	      }),
+	      subheaderElement,
+	      children
+	    );
+	  }
+	});
+
+	exports.default = List;
+	module.exports = exports['default'];
+
+/***/ },
+/* 497 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(158);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(215);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _colorManipulator = __webpack_require__(263);
+
+	var _colorManipulator2 = _interopRequireDefault(_colorManipulator);
+
+	var _stylePropable = __webpack_require__(219);
+
+	var _stylePropable2 = _interopRequireDefault(_stylePropable);
+
+	var _colors = __webpack_require__(262);
+
+	var _colors2 = _interopRequireDefault(_colors);
+
+	var _transitions = __webpack_require__(243);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _typography = __webpack_require__(403);
+
+	var _typography2 = _interopRequireDefault(_typography);
+
+	var _enhancedButton = __webpack_require__(404);
+
+	var _enhancedButton2 = _interopRequireDefault(_enhancedButton);
+
+	var _iconButton = __webpack_require__(432);
+
+	var _iconButton2 = _interopRequireDefault(_iconButton);
+
+	var _arrowDropUp = __webpack_require__(498);
+
+	var _arrowDropUp2 = _interopRequireDefault(_arrowDropUp);
+
+	var _arrowDropDown = __webpack_require__(499);
+
+	var _arrowDropDown2 = _interopRequireDefault(_arrowDropDown);
+
+	var _nestedList = __webpack_require__(500);
+
+	var _nestedList2 = _interopRequireDefault(_nestedList);
+
+	var _getMuiTheme = __webpack_require__(244);
+
+	var _getMuiTheme2 = _interopRequireDefault(_getMuiTheme);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	var ListItem = _react2.default.createClass({
+	  displayName: 'ListItem',
+
+	  propTypes: {
+	    /**
+	     * Generate a nested list indicator icon when
+	     * nested list items are detected. Set to false
+	     * if you do not want an indicator auto-generated.
+	     * Note that an indicator will not be created if a
+	     * rightIcon/Button has been specified.
+	     */
+	    autoGenerateNestedIndicator: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Children passed into the ListItem.
+	     */
+	    children: _react2.default.PropTypes.node,
+
+	    /**
+	     * Does not allow the element to be focused by the keyboard.
+	     */
+	    disableKeyboardFocus: _react2.default.PropTypes.bool,
+
+	    /**
+	     * If true, the list-item will not be clickable
+	     * and will not display hover affects.
+	     * This is automatically disabled if leftCheckbox
+	     * or rightToggle is set.
+	     */
+	    disabled: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Controls whether or not the child ListItems are initially displayed.
+	     */
+	    initiallyOpen: _react2.default.PropTypes.bool,
+
+	    /**
+	     * Style prop for the innder div element.
+	     */
+	    innerDivStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * If true, the children will be indented by 72px.
+	     * Only needed if there is no left avatar or left icon.
+	     */
+	    insetChildren: _react2.default.PropTypes.bool,
+
+	    /**
+	     * This is the Avatar element to be displayed on the left side.
+	     */
+	    leftAvatar: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the Checkbox element to be displayed on the left side.
+	     */
+	    leftCheckbox: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the SvgIcon or FontIcon to be displayed on the left side.
+	     */
+	    leftIcon: _react2.default.PropTypes.element,
+
+	    /**
+	     * An array of ListItems to nest underneath the current ListItem.
+	     */
+	    nestedItems: _react2.default.PropTypes.arrayOf(_react2.default.PropTypes.element),
+
+	    /**
+	     * Controls how deep a ListItem appears.
+	     * This property is automatically managed so modify at your own risk.
+	     */
+	    nestedLevel: _react2.default.PropTypes.number,
+
+	    /**
+	     * Override the inline-styles of the nestedItems NestedList.
+	     */
+	    nestedListStyle: _react2.default.PropTypes.object,
+
+	    /**
+	     * Called when the ListItem has keyboard focus.
+	     */
+	    onKeyboardFocus: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the mouse is over the ListItem.
+	     */
+	    onMouseEnter: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the mouse is no longer over the ListItem.
+	     */
+	    onMouseLeave: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when the ListItem toggles its nested ListItems.
+	     */
+	    onNestedListToggle: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when touches start.
+	     */
+	    onTouchStart: _react2.default.PropTypes.func,
+
+	    /**
+	     * Called when a touch tap event occures on the component.
+	     */
+	    onTouchTap: _react2.default.PropTypes.func,
+
+	    /**
+	     * This is the block element that contains the primary text.
+	     * If a string is passed in, a div tag will be rendered.
+	     */
+	    primaryText: _react2.default.PropTypes.node,
+
+	    /**
+	     * If provided, tapping on the primary text
+	     * of the item toggles the nested list.
+	     */
+	    primaryTogglesNestedList: _react2.default.PropTypes.bool,
+
+	    /**
+	     * This is the avatar element to be displayed on the right side.
+	     */
+	    rightAvatar: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the SvgIcon or FontIcon to be displayed on the right side.
+	     */
+	    rightIcon: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the IconButton to be displayed on the right side.
+	     * Hovering over this button will remove the ListItem hover.
+	     * Also, clicking on this button will not trigger a
+	     * ListItem ripple. The event will be stopped and prevented
+	     * from bubbling up to cause a ListItem click.
+	     */
+	    rightIconButton: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the Toggle element to display on the right side.
+	     */
+	    rightToggle: _react2.default.PropTypes.element,
+
+	    /**
+	     * This is the block element that contains the secondary text.
+	     * If a string is passed in, a div tag will be rendered.
+	     */
+	    secondaryText: _react2.default.PropTypes.node,
+
+	    /**
+	     * Can be 1 or 2. This is the number of secondary
+	     * text lines before ellipsis will show.
+	     */
+	    secondaryTextLines: _react2.default.PropTypes.oneOf([1, 2]),
+
+	    /**
+	     * Override the inline-styles of the root element.
+	     */
+	    style: _react2.default.PropTypes.object
+	  },
+
+	  contextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  //for passing default theme context to children
+	  childContextTypes: {
+	    muiTheme: _react2.default.PropTypes.object
+	  },
+
+	  mixins: [_reactAddonsPureRenderMixin2.default, _stylePropable2.default],
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      autoGenerateNestedIndicator: true,
+	      disableKeyboardFocus: false,
+	      disabled: false,
+	      initiallyOpen: false,
+	      insetChildren: false,
+	      nestedItems: [],
+	      nestedLevel: 0,
+	      onKeyboardFocus: function onKeyboardFocus() {},
+	      onMouseEnter: function onMouseEnter() {},
+	      onMouseLeave: function onMouseLeave() {},
+	      onNestedListToggle: function onNestedListToggle() {},
+	      onTouchStart: function onTouchStart() {},
+	      primaryTogglesNestedList: false,
+	      secondaryTextLines: 1
+	    };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      hovered: false,
+	      isKeyboardFocused: false,
+	      open: this.props.initiallyOpen,
+	      rightIconButtonHovered: false,
+	      rightIconButtonKeyboardFocused: false,
+	      touch: false,
+	      muiTheme: this.context.muiTheme || (0, _getMuiTheme2.default)()
+	    };
+	  },
+	  getChildContext: function getChildContext() {
+	    return {
+	      muiTheme: this.state.muiTheme
+	    };
+	  },
+
+	  //to update theme inside state whenever a new theme is passed down
+	  //from the parent / owner using context
+	  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+	    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+	    this.setState({ muiTheme: newMuiTheme });
+	  },
+	  applyFocusState: function applyFocusState(focusState) {
+	    var button = this.refs.enhancedButton;
+	    var buttonEl = _reactDom2.default.findDOMNode(button);
+
+	    if (button) {
+	      switch (focusState) {
+	        case 'none':
+	          buttonEl.blur();
+	          break;
+	        case 'focused':
+	          buttonEl.focus();
+	          break;
+	        case 'keyboard-focused':
+	          button.setKeyboardFocus();
+	          buttonEl.focus();
+	          break;
+	      }
+	    }
+	  },
+	  _createDisabledElement: function _createDisabledElement(styles, contentChildren, additionalProps) {
+	    var _props = this.props;
+	    var innerDivStyle = _props.innerDivStyle;
+	    var style = _props.style;
+
+	    var mergedDivStyles = this.mergeStyles(styles.root, styles.innerDiv, innerDivStyle, style);
+
+	    return _react2.default.createElement(
+	      'div',
+	      _extends({}, additionalProps, {
+	        style: this.prepareStyles(mergedDivStyles)
+	      }),
+	      contentChildren
+	    );
+	  },
+	  _createLabelElement: function _createLabelElement(styles, contentChildren, additionalProps) {
+	    var _props2 = this.props;
+	    var innerDivStyle = _props2.innerDivStyle;
+	    var style = _props2.style;
+
+	    var mergedLabelStyles = this.mergeStyles(styles.root, styles.innerDiv, innerDivStyle, styles.label, style);
+
+	    return _react2.default.createElement(
+	      'label',
+	      _extends({}, additionalProps, {
+	        style: this.prepareStyles(mergedLabelStyles)
+	      }),
+	      contentChildren
+	    );
+	  },
+	  _createTextElement: function _createTextElement(styles, data, key) {
+	    var isAnElement = _react2.default.isValidElement(data);
+	    var mergedStyles = isAnElement ? this.mergeStyles(styles, data.props.style) : null;
+
+	    return isAnElement ? _react2.default.cloneElement(data, {
+	      key: key,
+	      style: this.prepareStyles(mergedStyles)
+	    }) : _react2.default.createElement(
+	      'div',
+	      { key: key, style: this.prepareStyles(styles) },
+	      data
+	    );
+	  },
+	  _handleKeyboardFocus: function _handleKeyboardFocus(e, isKeyboardFocused) {
+	    this.setState({ isKeyboardFocused: isKeyboardFocused });
+	    this.props.onKeyboardFocus(e, isKeyboardFocused);
+	  },
+	  _handleMouseEnter: function _handleMouseEnter(e) {
+	    if (!this.state.touch) this.setState({ hovered: true });
+	    this.props.onMouseEnter(e);
+	  },
+	  _handleMouseLeave: function _handleMouseLeave(e) {
+	    this.setState({ hovered: false });
+	    this.props.onMouseLeave(e);
+	  },
+	  _handleNestedListToggle: function _handleNestedListToggle(e) {
+	    e.stopPropagation();
+	    this.setState({ open: !this.state.open });
+	    this.props.onNestedListToggle(this);
+	  },
+	  _handleRightIconButtonKeyboardFocus: function _handleRightIconButtonKeyboardFocus(e, isKeyboardFocused) {
+	    var iconButton = this.props.rightIconButton;
+	    var newState = {};
+
+	    newState.rightIconButtonKeyboardFocused = isKeyboardFocused;
+	    if (isKeyboardFocused) newState.isKeyboardFocused = false;
+	    this.setState(newState);
+
+	    if (iconButton && iconButton.props.onKeyboardFocus) iconButton.props.onKeyboardFocus(e, isKeyboardFocused);
+	  },
+	  _handleRightIconButtonMouseDown: function _handleRightIconButtonMouseDown(e) {
+	    var iconButton = this.props.rightIconButton;
+	    e.stopPropagation();
+	    if (iconButton && iconButton.props.onMouseDown) iconButton.props.onMouseDown(e);
+	  },
+	  _handleRightIconButtonMouseLeave: function _handleRightIconButtonMouseLeave(e) {
+	    var iconButton = this.props.rightIconButton;
+	    this.setState({ rightIconButtonHovered: false });
+	    if (iconButton && iconButton.props.onMouseLeave) iconButton.props.onMouseLeave(e);
+	  },
+	  _handleRightIconButtonMouseEnter: function _handleRightIconButtonMouseEnter(e) {
+	    var iconButton = this.props.rightIconButton;
+	    this.setState({ rightIconButtonHovered: true });
+	    if (iconButton && iconButton.props.onMouseEnter) iconButton.props.onMouseEnter(e);
+	  },
+	  _handleRightIconButtonMouseUp: function _handleRightIconButtonMouseUp(e) {
+	    var iconButton = this.props.rightIconButton;
+	    e.stopPropagation();
+	    if (iconButton && iconButton.props.onMouseUp) iconButton.props.onMouseUp(e);
+	  },
+	  _handleRightIconButtonTouchTap: function _handleRightIconButtonTouchTap(e) {
+	    var iconButton = this.props.rightIconButton;
+
+	    //Stop the event from bubbling up to the list-item
+	    e.stopPropagation();
+	    if (iconButton && iconButton.props.onTouchTap) iconButton.props.onTouchTap(e);
+	  },
+	  _handleTouchStart: function _handleTouchStart(e) {
+	    this.setState({ touch: true });
+	    this.props.onTouchStart(e);
+	  },
+	  _pushElement: function _pushElement(children, element, baseStyles, additionalProps) {
+	    if (element) {
+	      var styles = this.mergeStyles(baseStyles, element.props.style);
+	      children.push(_react2.default.cloneElement(element, _extends({
+	        key: children.length,
+	        style: styles
+	      }, additionalProps)));
+	    }
+	  },
+	  render: function render() {
+	    var _props3 = this.props;
+	    var autoGenerateNestedIndicator = _props3.autoGenerateNestedIndicator;
+	    var children = _props3.children;
+	    var disabled = _props3.disabled;
+	    var disableKeyboardFocus = _props3.disableKeyboardFocus;
+	    var innerDivStyle = _props3.innerDivStyle;
+	    var insetChildren = _props3.insetChildren;
+	    var leftAvatar = _props3.leftAvatar;
+	    var leftCheckbox = _props3.leftCheckbox;
+	    var leftIcon = _props3.leftIcon;
+	    var nestedItems = _props3.nestedItems;
+	    var nestedLevel = _props3.nestedLevel;
+	    var nestedListStyle = _props3.nestedListStyle;
+	    var onKeyboardFocus = _props3.onKeyboardFocus;
+	    var onMouseLeave = _props3.onMouseLeave;
+	    var onMouseEnter = _props3.onMouseEnter;
+	    var onTouchStart = _props3.onTouchStart;
+	    var onTouchTap = _props3.onTouchTap;
+	    var rightAvatar = _props3.rightAvatar;
+	    var rightIcon = _props3.rightIcon;
+	    var rightIconButton = _props3.rightIconButton;
+	    var rightToggle = _props3.rightToggle;
+	    var primaryText = _props3.primaryText;
+	    var primaryTogglesNestedList = _props3.primaryTogglesNestedList;
+	    var secondaryText = _props3.secondaryText;
+	    var secondaryTextLines = _props3.secondaryTextLines;
+	    var style = _props3.style;
+
+	    var other = _objectWithoutProperties(_props3, ['autoGenerateNestedIndicator', 'children', 'disabled', 'disableKeyboardFocus', 'innerDivStyle', 'insetChildren', 'leftAvatar', 'leftCheckbox', 'leftIcon', 'nestedItems', 'nestedLevel', 'nestedListStyle', 'onKeyboardFocus', 'onMouseLeave', 'onMouseEnter', 'onTouchStart', 'onTouchTap', 'rightAvatar', 'rightIcon', 'rightIconButton', 'rightToggle', 'primaryText', 'primaryTogglesNestedList', 'secondaryText', 'secondaryTextLines', 'style']);
+
+	    var textColor = this.state.muiTheme.rawTheme.palette.textColor;
+	    var hoverColor = _colorManipulator2.default.fade(textColor, 0.1);
+	    var singleAvatar = !secondaryText && (leftAvatar || rightAvatar);
+	    var singleNoAvatar = !secondaryText && !(leftAvatar || rightAvatar);
+	    var twoLine = secondaryText && secondaryTextLines === 1;
+	    var threeLine = secondaryText && secondaryTextLines > 1;
+	    var hasCheckbox = leftCheckbox || rightToggle;
+
+	    var styles = {
+	      root: {
+	        backgroundColor: (this.state.isKeyboardFocused || this.state.hovered) && !this.state.rightIconButtonHovered && !this.state.rightIconButtonKeyboardFocused ? hoverColor : null,
+	        color: textColor,
+	        display: 'block',
+	        fontSize: 16,
+	        lineHeight: '16px',
+	        position: 'relative',
+	        transition: _transitions2.default.easeOut()
+	      },
+
+	      //This inner div is needed so that ripples will span the entire container
+	      innerDiv: {
+	        marginLeft: nestedLevel * this.state.muiTheme.listItem.nestedLevelDepth,
+	        paddingLeft: leftIcon || leftAvatar || leftCheckbox || insetChildren ? 72 : 16,
+	        paddingRight: rightIcon || rightAvatar || rightIconButton ? 56 : rightToggle ? 72 : 16,
+	        paddingBottom: singleAvatar ? 20 : 16,
+	        paddingTop: singleNoAvatar || threeLine ? 16 : 20,
+	        position: 'relative'
+	      },
+
+	      icons: {
+	        height: 24,
+	        width: 24,
+	        display: 'block',
+	        position: 'absolute',
+	        top: twoLine ? 12 : singleAvatar ? 4 : 0,
+	        margin: 12
+	      },
+
+	      leftIcon: {
+	        color: _colors2.default.grey600,
+	        fill: _colors2.default.grey600,
+	        left: 4
+	      },
+
+	      rightIcon: {
+	        color: _colors2.default.grey400,
+	        fill: _colors2.default.grey400,
+	        right: 4
+	      },
+
+	      avatars: {
+	        position: 'absolute',
+	        top: singleAvatar ? 8 : 16
+	      },
+
+	      label: {
+	        cursor: 'pointer'
+	      },
+
+	      leftAvatar: {
+	        left: 16
+	      },
+
+	      rightAvatar: {
+	        right: 16
+	      },
+
+	      leftCheckbox: {
+	        position: 'absolute',
+	        display: 'block',
+	        width: 24,
+	        top: twoLine ? 24 : singleAvatar ? 16 : 12,
+	        left: 16
+	      },
+
+	      primaryText: {},
+
+	      rightIconButton: {
+	        position: 'absolute',
+	        display: 'block',
+	        top: twoLine ? 12 : singleAvatar ? 4 : 0,
+	        right: 4
+	      },
+
+	      rightToggle: {
+	        position: 'absolute',
+	        display: 'block',
+	        width: 54,
+	        top: twoLine ? 25 : singleAvatar ? 17 : 13,
+	        right: 8
+	      },
+
+	      secondaryText: {
+	        fontSize: 14,
+	        lineHeight: threeLine ? '18px' : '16px',
+	        height: threeLine ? 36 : 16,
+	        margin: 0,
+	        marginTop: 4,
+	        color: _typography2.default.textLightBlack,
+
+	        //needed for 2 and 3 line ellipsis
+	        overflow: 'hidden',
+	        textOverflow: 'ellipsis',
+	        whiteSpace: threeLine ? null : 'nowrap',
+	        display: threeLine ? '-webkit-box' : null,
+	        WebkitLineClamp: threeLine ? 2 : null,
+	        WebkitBoxOrient: threeLine ? 'vertical' : null
+	      }
+	    };
+
+	    var contentChildren = [children];
+
+	    if (leftIcon) {
+	      this._pushElement(contentChildren, leftIcon, this.mergeStyles(styles.icons, styles.leftIcon));
+	    }
+
+	    if (rightIcon) {
+	      this._pushElement(contentChildren, rightIcon, this.mergeStyles(styles.icons, styles.rightIcon));
+	    }
+
+	    if (leftAvatar) {
+	      this._pushElement(contentChildren, leftAvatar, this.mergeStyles(styles.avatars, styles.leftAvatar));
+	    }
+
+	    if (rightAvatar) {
+	      this._pushElement(contentChildren, rightAvatar, this.mergeStyles(styles.avatars, styles.rightAvatar));
+	    }
+
+	    if (leftCheckbox) {
+	      this._pushElement(contentChildren, leftCheckbox, this.mergeStyles(styles.leftCheckbox));
+	    }
+
+	    //RightIconButtonElement
+	    var hasNestListItems = nestedItems.length;
+	    var hasRightElement = rightAvatar || rightIcon || rightIconButton || rightToggle;
+	    var needsNestedIndicator = hasNestListItems && autoGenerateNestedIndicator && !hasRightElement;
+
+	    if (rightIconButton || needsNestedIndicator) {
+	      var rightIconButtonElement = rightIconButton;
+	      var rightIconButtonHandlers = {
+	        onKeyboardFocus: this._handleRightIconButtonKeyboardFocus,
+	        onMouseEnter: this._handleRightIconButtonMouseEnter,
+	        onMouseLeave: this._handleRightIconButtonMouseLeave,
+	        onTouchTap: this._handleRightIconButtonTouchTap,
+	        onMouseDown: this._handleRightIconButtonMouseUp,
+	        onMouseUp: this._handleRightIconButtonMouseUp
+	      };
+
+	      // Create a nested list indicator icon if we don't have an icon on the right
+	      if (needsNestedIndicator) {
+	        rightIconButtonElement = this.state.open ? _react2.default.createElement(
+	          _iconButton2.default,
+	          null,
+	          _react2.default.createElement(_arrowDropUp2.default, null)
+	        ) : _react2.default.createElement(
+	          _iconButton2.default,
+	          null,
+	          _react2.default.createElement(_arrowDropDown2.default, null)
+	        );
+	        rightIconButtonHandlers.onTouchTap = this._handleNestedListToggle;
+	      }
+
+	      this._pushElement(contentChildren, rightIconButtonElement, this.mergeStyles(styles.rightIconButton), rightIconButtonHandlers);
+	    }
+
+	    if (rightToggle) {
+	      this._pushElement(contentChildren, rightToggle, this.mergeStyles(styles.rightToggle));
+	    }
+
+	    if (primaryText) {
+	      var secondaryTextElement = this._createTextElement(styles.primaryText, primaryText, 'primaryText');
+	      contentChildren.push(secondaryTextElement);
+	    }
+
+	    if (secondaryText) {
+	      var secondaryTextElement = this._createTextElement(styles.secondaryText, secondaryText, 'secondaryText');
+	      contentChildren.push(secondaryTextElement);
+	    }
+
+	    var nestedList = nestedItems.length ? _react2.default.createElement(
+	      _nestedList2.default,
+	      { nestedLevel: nestedLevel + 1, open: this.state.open, style: nestedListStyle },
+	      nestedItems
+	    ) : undefined;
+
+	    return _react2.default.createElement(
+	      'div',
+	      null,
+	      hasCheckbox ? this._createLabelElement(styles, contentChildren, other) : disabled ? this._createDisabledElement(styles, contentChildren, other) : _react2.default.createElement(
+	        _enhancedButton2.default,
+	        _extends({}, other, {
+	          disabled: disabled,
+	          disableKeyboardFocus: disableKeyboardFocus || this.state.rightIconButtonKeyboardFocused,
+	          linkButton: true,
+	          onKeyboardFocus: this._handleKeyboardFocus,
+	          onMouseLeave: this._handleMouseLeave,
+	          onMouseEnter: this._handleMouseEnter,
+	          onTouchStart: this._handleTouchStart,
+	          onTouchTap: primaryTogglesNestedList ? this._handleNestedListToggle : onTouchTap,
+	          ref: 'enhancedButton',
+	          style: this.mergeStyles(styles.root, style)
+	        }),
+	        _react2.default.createElement(
+	          'div',
+	          { style: this.prepareStyles(styles.innerDiv, innerDivStyle) },
+	          contentChildren
+	        )
+	      ),
+	      nestedList
+	    );
+	  }
+	});
+
+	exports.default = ListItem;
+	module.exports = exports['default'];
+
+/***/ },
+/* 498 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(215);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _svgIcon = __webpack_require__(218);
+
+	var _svgIcon2 = _interopRequireDefault(_svgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NavigationArrowDropUp = _react2.default.createClass({
+	  displayName: 'NavigationArrowDropUp',
+
+	  mixins: [_reactAddonsPureRenderMixin2.default],
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      _svgIcon2.default,
+	      this.props,
+	      _react2.default.createElement('path', { d: 'M7 14l5-5 5 5z' })
+	    );
+	  }
+	});
+
+	exports.default = NavigationArrowDropUp;
+	module.exports = exports['default'];
+
+/***/ },
+/* 499 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactAddonsPureRenderMixin = __webpack_require__(215);
+
+	var _reactAddonsPureRenderMixin2 = _interopRequireDefault(_reactAddonsPureRenderMixin);
+
+	var _svgIcon = __webpack_require__(218);
+
+	var _svgIcon2 = _interopRequireDefault(_svgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var NavigationArrowDropDown = _react2.default.createClass({
+	  displayName: 'NavigationArrowDropDown',
+
+	  mixins: [_reactAddonsPureRenderMixin2.default],
+
+	  render: function render() {
+	    return _react2.default.createElement(
+	      _svgIcon2.default,
+	      this.props,
+	      _react2.default.createElement('path', { d: 'M7 10l5 5 5-5z' })
+	    );
+	  }
+	});
+
+	exports.default = NavigationArrowDropDown;
+	module.exports = exports['default'];
+
+/***/ },
+/* 500 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _styles = __webpack_require__(220);
+
+	var _list = __webpack_require__(496);
+
+	var _list2 = _interopRequireDefault(_list);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var NestedList = function (_React$Component) {
+	  _inherits(NestedList, _React$Component);
+
+	  function NestedList() {
+	    _classCallCheck(this, NestedList);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(NestedList).apply(this, arguments));
+	  }
+
+	  _createClass(NestedList, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var children = _props.children;
+	      var open = _props.open;
+	      var nestedLevel = _props.nestedLevel;
+	      var style = _props.style;
+
+	      var styles = {
+	        root: {
+	          display: open ? null : 'none'
+	        }
+	      };
+
+	      return _react2.default.createElement(
+	        _list2.default,
+	        { style: (0, _styles.mergeStyles)(styles.root, style) },
+	        _react2.default.Children.map(children, function (child) {
+	          return _react2.default.isValidElement(child) ? _react2.default.cloneElement(child, {
+	            nestedLevel: nestedLevel + 1
+	          }) : child;
+	        })
+	      );
+	    }
+	  }]);
+
+	  return NestedList;
+	}(_react2.default.Component);
+
+	NestedList.propTypes = {
+	  children: _react2.default.PropTypes.node,
+	  nestedLevel: _react2.default.PropTypes.number,
+	  open: _react2.default.PropTypes.bool,
+
+	  /**
+	   * Override the inline-styles of the root element.
+	   */
+	  style: _react2.default.PropTypes.object
+	};
+	NestedList.defaultProps = {
+	  nestedLevel: 1,
+	  open: false
+	};
+	exports.default = NestedList;
+	module.exports = exports['default'];
+
+/***/ },
+/* 501 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	__webpack_require__(481);
+	var React = __webpack_require__(1);
+
+	var firebaseUtil = __webpack_require__(278);
+
+	var Avatar = __webpack_require__(484);
+	var Card = __webpack_require__(485);
+	var CardHeader = __webpack_require__(489);
+	var CardText = __webpack_require__(495);
+	var FlatButton = __webpack_require__(423);
+	var Form = __webpack_require__(380).Form;
+	var FormsyText = __webpack_require__(387);
+	var List = __webpack_require__(496);
+	var ListItem = __webpack_require__(497);
+	var RaisedButton = __webpack_require__(399);
+
+	var Colors = __webpack_require__(262);
+
+	var CopingStrategies = React.createClass({
+	  displayName: 'CopingStrategies',
+
+	  childContextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  contextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  getChildContext: function getChildContext() {
+	    return { muiTheme: this.context.muiTheme };
+	  },
+	  getInitialState: function getInitialState() {
+	    return { muiTheme: this.context.muiTheme, onForm: false, extraFields: null, dataFields: null, dataList: this.props.initialData };
+	  },
+	  toggleForm: function toggleForm() {
+	    //render form view and set transitional form states if needed
+	    this.setState({ onForm: true });
+	    if (this.state.dataList) {
+	      this.setState({ extraFields: [1] });
+	      this.setState({ dataFields: this.state.dataList });
+	    }
+	  },
+	  handleAdd: function handleAdd() {
+	    //add extra form field
+	    if (!this.state.extraFields) {
+	      this.setState({ extraFields: [1] });
+	    } else {
+	      this.setState({ extraFields: this.state.extraFields.concat([this.state.extraFields[this.state.extraFields.length - 1] + 1]) });
+	    }
+	  },
+	  handleDelete: function handleDelete() {
+	    //remove form field from either extraFields or dataFields states
+	    if (this.state.extraFields) {
+	      if (this.state.extraFields.length == 1) {
+	        this.setState({ extraFields: null });
+	      } else {
+	        this.setState({ extraFields: this.state.extraFields.slice(0, this.state.extraFields.length - 1) });
+	      }
+	    } else {
+	      if (this.state.dataFields) {
+	        if (this.state.dataFields.length == 1) {
+	          this.setState({ dataFields: null });
+	        } else {
+	          this.setState({ dataFields: this.state.dataFields.slice(0, this.state.dataFields.length - 1) });
+	        }
+	      }
+	    }
+	  },
+	  handleCancel: function handleCancel() {
+	    //go back to data view and reset transitional form states
+	    this.setState({ onForm: false });
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  handleSubmit: function handleSubmit(model) {
+	    console.log(model);
+	    //do something here
+	    var keysList = Object.keys(model);
+	    //check if no data was submitted
+	    var noData = true;
+	    for (var i = 0; i < keysList.length; i++) {
+	      if (model[keysList[i]]) {
+	        noData = false;
+	      }
+	    }
+	    //if no data submitted, empty the warning signs data in DB
+	    if (noData) {
+	      firebaseUtil.removeCopingStrategyData(function () {
+	        this.setState({ dataList: null });
+	        this.setState({ onForm: false });
+	      }.bind(this));
+	      //if data submitted, set warning signs data in DB
+	    } else {
+	        var data = [];
+	        for (var key in model) {
+	          data.push(model[key]);
+	        }
+	        firebaseUtil.saveCopingStrategyData(data);
+	        this.setState({ dataList: data });
+	        this.setState({ onForm: false });
+	      }
+	    //reset transitional form states
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  render: function render() {
+	    var styles = {
+	      cardHeader: {
+	        general: {
+	          backgroundColor: Colors.indigo400,
+	          height: '17vw'
+	        },
+	        title: {
+	          fontSize: '4vw',
+	          paddingBottom: '1vw'
+	        },
+	        subtitle: {
+	          fontSize: '3vw',
+	          fontWeight: '300'
+	        }
+	      },
+	      cardTextNone: {
+	        display: 'flex',
+	        height: '25vw',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50,
+	        fontSize: '4vw',
+	        fontWeight: '300',
+	        textAlign: 'center'
+	      },
+	      cardTextData: {
+	        display: 'flex',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50
+	      },
+	      editButton: {
+	        width: '5%',
+	        bottom: '5',
+	        right: '5',
+	        position: 'absolute',
+	        alignSelf: 'flex-end'
+	      },
+	      editLabel: {
+	        fontSize: '4vw'
+	      },
+	      cardTextForm: {
+	        padding: '1vw',
+	        backgroundColor: Colors.indigo50
+	      },
+	      form: {
+	        general: {
+	          display: 'flex',
+	          flexDirection: 'column',
+	          flex: '1 1 auto'
+	        },
+	        formActionBttns: {
+	          general: {
+	            flex: '1 1 auto',
+	            margin: '2vw',
+	            width: '40%'
+	          },
+	          labelStyle: {
+	            fontSize: '3vw',
+	            color: Colors.grey100
+	          }
+	        }
+	      }
+	    };
+	    if (this.state.onForm) {
+	      if (this.state.dataFields) {
+	        var newStart = this.state.dataFields.length;
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'copingStrategies', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Coping Strategies',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Relaxations, Techniques, Physical Activites',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "copingStrategy" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a coping strategy you can use to avoid acting on harmful actions and urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "copingStrategy" + (newStart + i).toString(),
+	                      hintText: 'Please describe a coping strategy you can use to avoid acting on harmful actions and urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'copingStrategies', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Coping Strategies',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Relaxations, Techniques, Physical Activites',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "copingStrategy" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a coping strategy you can use to avoid acting on harmful actions and urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      } else {
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'copingStrategies', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Coping Strategies',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Relaxations, Techniques, Physical Activites',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'copingStrategy1',
+	                    hintText: 'Please describe a coping strategy you can use to avoid acting on harmful actions and urges.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "copingStrategy" + (1 + i).toString(),
+	                      hintText: 'Please describe a coping strategy you can use to avoid acting on harmful actions and urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'copingStrategies', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Coping Strategies',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Relaxations, Techniques, Physical Activites',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'copingStrategy1',
+	                    hintText: 'Please describe a coping strategy you can use to avoid acting on harmful actions and urges.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    textAreaStyle: { color: Colors.indigo900 },
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      }
+	    } else {
+	      if (this.state.dataList) {
+	        return React.createElement(
+	          Card,
+	          { id: 'copingStrategies', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Coping Strategies',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Relaxations, Techniques, Physical Activites',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextData, expandable: true },
+	            React.createElement(
+	              List,
+	              { style: { flex: '1 1 auto', backgroundColor: Colors.indigo50 } },
+	              this.state.dataList.map(function (i) {
+	                return React.createElement(
+	                  ListItem,
+	                  { disabled: true, leftAvatar: React.createElement(
+	                      Avatar,
+	                      { color: Colors.indigo900, backgroundColor: Colors.cyan400 },
+	                      this.state.dataList.indexOf(i) + 1
+	                    ) },
+	                  React.createElement(
+	                    'div',
+	                    { className: 'data' },
+	                    i
+	                  )
+	                );
+	              }.bind(this))
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      } else {
+	        return React.createElement(
+	          Card,
+	          { id: 'copingStrategies', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Coping Strategies',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Relaxations, Techniques, Physical Activites',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextNone, expandable: true },
+	            React.createElement(
+	              'div',
+	              { className: 'noData' },
+	              'No coping strategies have been saved'
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      }
+	    }
+	  }
+	});
+
+	module.exports = CopingStrategies;
+
+/***/ },
+/* 502 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	__webpack_require__(481);
+	var React = __webpack_require__(1);
+
+	var firebaseUtil = __webpack_require__(278);
+
+	var Avatar = __webpack_require__(484);
+	var Card = __webpack_require__(485);
+	var CardHeader = __webpack_require__(489);
+	var CardText = __webpack_require__(495);
+	var FlatButton = __webpack_require__(423);
+	var Form = __webpack_require__(380).Form;
+	var FormsyText = __webpack_require__(387);
+	var List = __webpack_require__(496);
+	var ListItem = __webpack_require__(497);
+	var RaisedButton = __webpack_require__(399);
+
+	var Colors = __webpack_require__(262);
+
+	var Distractions = React.createClass({
+	  displayName: 'Distractions',
+
+	  childContextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  contextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  getChildContext: function getChildContext() {
+	    return { muiTheme: this.context.muiTheme };
+	  },
+	  getInitialState: function getInitialState() {
+	    return { muiTheme: this.context.muiTheme, onForm: false, extraFields: null, dataFields: null, dataList: this.props.initialData };
+	  },
+	  toggleForm: function toggleForm() {
+	    //render form view and set transitional form states if needed
+	    this.setState({ onForm: true });
+	    if (this.state.dataList) {
+	      this.setState({ extraFields: [1] });
+	      this.setState({ dataFields: this.state.dataList });
+	    }
+	  },
+	  handleAdd: function handleAdd() {
+	    //add extra form field
+	    if (!this.state.extraFields) {
+	      this.setState({ extraFields: [1] });
+	    } else {
+	      this.setState({ extraFields: this.state.extraFields.concat([this.state.extraFields[this.state.extraFields.length - 1] + 1]) });
+	    }
+	  },
+	  handleDelete: function handleDelete() {
+	    //remove form field from either extraFields or dataFields states
+	    if (this.state.extraFields) {
+	      if (this.state.extraFields.length == 1) {
+	        this.setState({ extraFields: null });
+	      } else {
+	        this.setState({ extraFields: this.state.extraFields.slice(0, this.state.extraFields.length - 1) });
+	      }
+	    } else {
+	      if (this.state.dataFields) {
+	        if (this.state.dataFields.length == 1) {
+	          this.setState({ dataFields: null });
+	        } else {
+	          this.setState({ dataFields: this.state.dataFields.slice(0, this.state.dataFields.length - 1) });
+	        }
+	      }
+	    }
+	  },
+	  handleCancel: function handleCancel() {
+	    //go back to data view and reset transitional form states
+	    this.setState({ onForm: false });
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  handleSubmit: function handleSubmit(model) {
+	    //do something here
+	    var keysList = Object.keys(model);
+	    //check if no data was submitted
+	    var noData = true;
+	    for (var i = 0; i < keysList.length; i++) {
+	      if (model[keysList[i]]) {
+	        noData = false;
+	      }
+	    }
+	    //if no data submitted, empty the warning signs data in DB
+	    if (noData) {
+	      firebaseUtil.removeDistractionData(function () {
+	        this.setState({ dataList: null });
+	        this.setState({ onForm: false });
+	      }.bind(this));
+	      //if data submitted, set warning signs data in DB
+	    } else {
+	        var data = [];
+	        for (var key in model) {
+	          data.push(model[key]);
+	        }
+	        firebaseUtil.saveDistractionData(data);
+	        this.setState({ dataList: data });
+	        this.setState({ onForm: false });
+	      }
+	    //reset transitional form states
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  render: function render() {
+	    var styles = {
+	      cardHeader: {
+	        general: {
+	          backgroundColor: Colors.indigo400,
+	          height: '17vw'
+	        },
+	        title: {
+	          fontSize: '4vw',
+	          paddingBottom: '1vw'
+	        },
+	        subtitle: {
+	          fontSize: '3vw',
+	          fontWeight: '300'
+	        }
+	      },
+	      cardTextNone: {
+	        display: 'flex',
+	        height: '25vw',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50,
+	        fontSize: '4vw',
+	        fontWeight: '300',
+	        textAlign: 'center'
+	      },
+	      cardTextData: {
+	        display: 'flex',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50
+	      },
+	      editButton: {
+	        width: '5%',
+	        bottom: '5',
+	        right: '5',
+	        position: 'absolute',
+	        alignSelf: 'flex-end'
+	      },
+	      editLabel: {
+	        fontSize: '4vw'
+	      },
+	      cardTextForm: {
+	        padding: '1vw',
+	        backgroundColor: Colors.indigo50
+	      },
+	      form: {
+	        general: {
+	          display: 'flex',
+	          flexDirection: 'column',
+	          flex: '1 1 auto'
+	        },
+	        formActionBttns: {
+	          general: {
+	            flex: '1 1 auto',
+	            margin: '2vw',
+	            width: '40%'
+	          },
+	          labelStyle: {
+	            fontSize: '3vw',
+	            color: Colors.grey100
+	          }
+	        }
+	      }
+	    };
+	    if (this.state.onForm) {
+	      if (this.state.dataFields) {
+	        var newStart = this.state.dataFields.length;
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'distractions', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Distractions',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'People and Places That Provide Distractions',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "distraction" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a person or place that might help take your mind off things.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "distraction" + (newStart + i).toString(),
+	                      hintText: 'Please describe a person or place that might help take your mind off things.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'distractions', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Distractions',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'People and Places That Provide Distractions',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "distraction" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a person or place that might help take your mind off things.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      } else {
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'distractions', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Distractions',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'People and Places That Provide Distractions',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'distraction1',
+	                    hintText: 'Please describe a person or place that might help take your mind off things.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "distraction" + (1 + i).toString(),
+	                      hintText: 'Please describe a person or place that might help take your mind off things.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'distractions', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Distractions',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'People and Places That Provide Distractions',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'distraction1',
+	                    hintText: 'Please describe a person or place that might help take your mind off things.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    textAreaStyle: { color: Colors.indigo900 },
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      }
+	    } else {
+	      if (this.state.dataList) {
+	        return React.createElement(
+	          Card,
+	          { id: 'distractions', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Distractions',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'People and Places That Provide Distractions',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextData, expandable: true },
+	            React.createElement(
+	              List,
+	              { style: { flex: '1 1 auto', backgroundColor: Colors.indigo50 } },
+	              this.state.dataList.map(function (i) {
+	                return React.createElement(
+	                  ListItem,
+	                  { disabled: true, leftAvatar: React.createElement(
+	                      Avatar,
+	                      { color: Colors.indigo900, backgroundColor: Colors.cyan400 },
+	                      this.state.dataList.indexOf(i) + 1
+	                    ) },
+	                  React.createElement(
+	                    'div',
+	                    { className: 'data' },
+	                    i
+	                  )
+	                );
+	              }.bind(this))
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      } else {
+	        return React.createElement(
+	          Card,
+	          { id: 'distractions', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Distractions',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'People and Places That Provide Distractions',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextNone, expandable: true },
+	            React.createElement(
+	              'div',
+	              { className: 'noData' },
+	              'No distractions have been saved'
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      }
+	    }
+	  }
+	});
+
+	module.exports = Distractions;
+
+/***/ },
+/* 503 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	__webpack_require__(481);
+	var React = __webpack_require__(1);
+
+	var firebaseUtil = __webpack_require__(278);
+
+	var Avatar = __webpack_require__(484);
+	var Card = __webpack_require__(485);
+	var CardHeader = __webpack_require__(489);
+	var CardText = __webpack_require__(495);
+	var FlatButton = __webpack_require__(423);
+	var Form = __webpack_require__(380).Form;
+	var FormsyText = __webpack_require__(387);
+	var List = __webpack_require__(496);
+	var ListItem = __webpack_require__(497);
+	var RaisedButton = __webpack_require__(399);
+
+	var Colors = __webpack_require__(262);
+
+	var SafetyPlace = React.createClass({
+	  displayName: 'SafetyPlace',
+
+	  childContextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  contextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  getChildContext: function getChildContext() {
+	    return { muiTheme: this.context.muiTheme };
+	  },
+	  getInitialState: function getInitialState() {
+	    return { muiTheme: this.context.muiTheme, onForm: false, extraFields: null, dataFields: null, dataList: this.props.initialData };
+	  },
+	  toggleForm: function toggleForm() {
+	    //render form view and set transitional form states if needed
+	    this.setState({ onForm: true });
+	    if (this.state.dataList) {
+	      this.setState({ extraFields: [1] });
+	      this.setState({ dataFields: this.state.dataList });
+	    }
+	  },
+	  handleAdd: function handleAdd() {
+	    //add extra form field
+	    if (!this.state.extraFields) {
+	      this.setState({ extraFields: [1] });
+	    } else {
+	      this.setState({ extraFields: this.state.extraFields.concat([this.state.extraFields[this.state.extraFields.length - 1] + 1]) });
+	    }
+	  },
+	  handleDelete: function handleDelete() {
+	    //remove form field from either extraFields or dataFields states
+	    if (this.state.extraFields) {
+	      if (this.state.extraFields.length == 1) {
+	        this.setState({ extraFields: null });
+	      } else {
+	        this.setState({ extraFields: this.state.extraFields.slice(0, this.state.extraFields.length - 1) });
+	      }
+	    } else {
+	      if (this.state.dataFields) {
+	        if (this.state.dataFields.length == 1) {
+	          this.setState({ dataFields: null });
+	        } else {
+	          this.setState({ dataFields: this.state.dataFields.slice(0, this.state.dataFields.length - 1) });
+	        }
+	      }
+	    }
+	  },
+	  handleCancel: function handleCancel() {
+	    //go back to data view and reset transitional form states
+	    this.setState({ onForm: false });
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  handleSubmit: function handleSubmit(model) {
+	    //do something here
+	    var keysList = Object.keys(model);
+	    //check if no data was submitted
+	    var noData = true;
+	    for (var i = 0; i < keysList.length; i++) {
+	      if (model[keysList[i]]) {
+	        noData = false;
+	      }
+	    }
+	    //if no data submitted, empty the warning signs data in DB
+	    if (noData) {
+	      firebaseUtil.removeSafetyMeasureData(function () {
+	        this.setState({ dataList: null });
+	        this.setState({ onForm: false });
+	      }.bind(this));
+	      //if data submitted, set warning signs data in DB
+	    } else {
+	        var data = [];
+	        for (var key in model) {
+	          data.push(model[key]);
+	        }
+	        firebaseUtil.saveSafetyMeasureData(data);
+	        this.setState({ dataList: data });
+	        this.setState({ onForm: false });
+	      }
+	    //reset transitional form states
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  render: function render() {
+	    var styles = {
+	      cardHeader: {
+	        general: {
+	          backgroundColor: Colors.indigo400,
+	          height: '17vw'
+	        },
+	        title: {
+	          fontSize: '4vw',
+	          paddingBottom: '1vw'
+	        },
+	        subtitle: {
+	          fontSize: '3vw',
+	          fontWeight: '300'
+	        }
+	      },
+	      cardTextNone: {
+	        display: 'flex',
+	        height: '25vw',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50,
+	        fontSize: '4vw',
+	        fontWeight: '300',
+	        textAlign: 'center'
+	      },
+	      cardTextData: {
+	        display: 'flex',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50
+	      },
+	      editButton: {
+	        width: '5%',
+	        bottom: '5',
+	        right: '5',
+	        position: 'absolute',
+	        alignSelf: 'flex-end'
+	      },
+	      editLabel: {
+	        fontSize: '4vw'
+	      },
+	      cardTextForm: {
+	        padding: '1vw',
+	        backgroundColor: Colors.indigo50
+	      },
+	      form: {
+	        general: {
+	          display: 'flex',
+	          flexDirection: 'column',
+	          flex: '1 1 auto'
+	        },
+	        formActionBttns: {
+	          general: {
+	            flex: '1 1 auto',
+	            margin: '2vw',
+	            width: '40%'
+	          },
+	          labelStyle: {
+	            fontSize: '3vw',
+	            color: Colors.grey100
+	          }
+	        }
+	      }
+	    };
+	    if (this.state.onForm) {
+	      if (this.state.dataFields) {
+	        var newStart = this.state.dataFields.length;
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'safeMeasures', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Safety Measures',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Ways To Ensure Your Environment Is Safe',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "safeMeasure" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a safety measure to limit your access to ways in which you can harm yourself.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "safeMeasure" + (newStart + i).toString(),
+	                      hintText: 'Please describe a safety measure to limit your access to ways in which you can harm yourself.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'safeMeasures', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Safety Measures',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Ways To Ensure Your Environment Is Safe',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "safeMeasure" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a safety measure to limit your access to ways in which you can harm yourself.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      } else {
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'safeMeasures', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Safety Measures',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Ways To Ensure Your Environment Is Safe',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'safeMeasure1',
+	                    hintText: 'Please describe a safety measure to limit your access to ways in which you can harm yourself.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "safeMeasure" + (1 + i).toString(),
+	                      hintText: 'Please describe a safety measure to limit your access to ways in which you can harm yourself.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'safeMeasures', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Safety Measures',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Ways To Ensure Your Environment Is Safe',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'safeMeasure1',
+	                    hintText: 'Please describe a safety measure to limit your access to ways in which you can harm yourself.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    textAreaStyle: { color: Colors.indigo900 },
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      }
+	    } else {
+	      if (this.state.dataList) {
+	        return React.createElement(
+	          Card,
+	          { id: 'safeMeasures', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Safety Measures',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Ways To Ensure Your Environment Is Safe',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextData, expandable: true },
+	            React.createElement(
+	              List,
+	              { style: { flex: '1 1 auto', backgroundColor: Colors.indigo50 } },
+	              this.state.dataList.map(function (i) {
+	                return React.createElement(
+	                  ListItem,
+	                  { disabled: true, leftAvatar: React.createElement(
+	                      Avatar,
+	                      { color: Colors.indigo900, backgroundColor: Colors.cyan400 },
+	                      this.state.dataList.indexOf(i) + 1
+	                    ) },
+	                  React.createElement(
+	                    'div',
+	                    { className: 'data' },
+	                    i
+	                  )
+	                );
+	              }.bind(this))
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      } else {
+	        return React.createElement(
+	          Card,
+	          { id: 'safeMeasures', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Safety Measures',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Ways To Ensure Your Environment Is Safe',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextNone, expandable: true },
+	            React.createElement(
+	              'div',
+	              { className: 'noData' },
+	              'No safety measures have been saved'
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      }
+	    }
+	  }
+	});
+
+	module.exports = SafetyPlace;
+
+/***/ },
+/* 504 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	__webpack_require__(481);
+	var React = __webpack_require__(1);
+
+	var firebaseUtil = __webpack_require__(278);
+
+	var Avatar = __webpack_require__(484);
+	var Card = __webpack_require__(485);
+	var CardHeader = __webpack_require__(489);
+	var CardText = __webpack_require__(495);
+	var FlatButton = __webpack_require__(423);
+	var Form = __webpack_require__(380).Form;
+	var FormsyText = __webpack_require__(387);
+	var List = __webpack_require__(496);
+	var ListItem = __webpack_require__(497);
+	var RaisedButton = __webpack_require__(399);
+
+	var Colors = __webpack_require__(262);
+
+	var ReasonsToLive = React.createClass({
+	  displayName: 'ReasonsToLive',
+
+	  childContextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  contextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  getChildContext: function getChildContext() {
+	    return { muiTheme: this.context.muiTheme };
+	  },
+	  getInitialState: function getInitialState() {
+	    return { muiTheme: this.context.muiTheme, onForm: false, extraFields: null, dataFields: null, dataList: this.props.initialData };
+	  },
+	  toggleForm: function toggleForm() {
+	    //render form view and set transitional form states if needed
+	    this.setState({ onForm: true });
+	    if (this.state.dataList) {
+	      this.setState({ extraFields: [1] });
+	      this.setState({ dataFields: this.state.dataList });
+	    }
+	  },
+	  handleAdd: function handleAdd() {
+	    //add extra form field
+	    if (!this.state.extraFields) {
+	      this.setState({ extraFields: [1] });
+	    } else {
+	      this.setState({ extraFields: this.state.extraFields.concat([this.state.extraFields[this.state.extraFields.length - 1] + 1]) });
+	    }
+	  },
+	  handleDelete: function handleDelete() {
+	    //remove form field from either extraFields or dataFields states
+	    if (this.state.extraFields) {
+	      if (this.state.extraFields.length == 1) {
+	        this.setState({ extraFields: null });
+	      } else {
+	        this.setState({ extraFields: this.state.extraFields.slice(0, this.state.extraFields.length - 1) });
+	      }
+	    } else {
+	      if (this.state.dataFields) {
+	        if (this.state.dataFields.length == 1) {
+	          this.setState({ dataFields: null });
+	        } else {
+	          this.setState({ dataFields: this.state.dataFields.slice(0, this.state.dataFields.length - 1) });
+	        }
+	      }
+	    }
+	  },
+	  handleCancel: function handleCancel() {
+	    //go back to data view and reset transitional form states
+	    this.setState({ onForm: false });
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  handleSubmit: function handleSubmit(model) {
+	    //do something here
+	    var keysList = Object.keys(model);
+	    //check if no data was submitted
+	    var noData = true;
+	    for (var i = 0; i < keysList.length; i++) {
+	      if (model[keysList[i]]) {
+	        noData = false;
+	      }
+	    }
+	    //if no data submitted, empty the warning signs data in DB
+	    if (noData) {
+	      firebaseUtil.removeReasonToLiveData(function () {
+	        this.setState({ dataList: null });
+	        this.setState({ onForm: false });
+	      }.bind(this));
+	      //if data submitted, set warning signs data in DB
+	    } else {
+	        var data = [];
+	        for (var key in model) {
+	          data.push(model[key]);
+	        }
+	        firebaseUtil.saveReasonToLiveData(data);
+	        this.setState({ dataList: data });
+	        this.setState({ onForm: false });
+	      }
+	    //reset transitional form states
+	    this.setState({ extraFields: null });
+	    this.setState({ dataFields: null });
+	  },
+	  render: function render() {
+	    var styles = {
+	      cardHeader: {
+	        general: {
+	          backgroundColor: Colors.indigo400,
+	          height: '17vw'
+	        },
+	        title: {
+	          fontSize: '4vw',
+	          paddingBottom: '1vw'
+	        },
+	        subtitle: {
+	          fontSize: '3vw',
+	          fontWeight: '300'
+	        }
+	      },
+	      cardTextNone: {
+	        display: 'flex',
+	        height: '25vw',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50,
+	        fontSize: '4vw',
+	        fontWeight: '300',
+	        textAlign: 'center'
+	      },
+	      cardTextData: {
+	        display: 'flex',
+	        flexDirection: 'column',
+	        position: 'relative',
+	        backgroundColor: Colors.indigo50
+	      },
+	      editButton: {
+	        width: '5%',
+	        bottom: '5',
+	        right: '5',
+	        position: 'absolute',
+	        alignSelf: 'flex-end'
+	      },
+	      editLabel: {
+	        fontSize: '4vw'
+	      },
+	      cardTextForm: {
+	        padding: '1vw',
+	        backgroundColor: Colors.indigo50
+	      },
+	      form: {
+	        general: {
+	          display: 'flex',
+	          flexDirection: 'column',
+	          flex: '1 1 auto'
+	        },
+	        formActionBttns: {
+	          general: {
+	            flex: '1 1 auto',
+	            margin: '2vw',
+	            width: '40%'
+	          },
+	          labelStyle: {
+	            fontSize: '3vw',
+	            color: Colors.grey100
+	          }
+	        }
+	      }
+	    };
+	    if (this.state.onForm) {
+	      if (this.state.dataFields) {
+	        var newStart = this.state.dataFields.length;
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'reasonsToLive', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Reasons To Live',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Important reminders in a crisis',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "reasonToLive" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a reason to live you can use to keep from acting on suicidal thoughts or urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "reasonToLive" + (newStart + i).toString(),
+	                      hintText: 'Please describe a reason to live you can use to keep from acting on suicidal thoughts or urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'reasonsToLive', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Reasons To Live',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Important reminders in a crisis',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                this.state.dataFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "reasonToLive" + this.state.dataFields.indexOf(i).toString(),
+	                      value: i, hintText: 'Please describe a reason to live you can use to keep from acting on suicidal thoughts or urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                      textAreaStyle: { color: Colors.indigo900 },
+	                      hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      } else {
+	        if (this.state.extraFields) {
+	          return React.createElement(
+	            Card,
+	            { id: 'reasonsToLive', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Reasons To Live',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Important reminders in a crisis',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'reasonToLive1',
+	                    hintText: 'Please describe a reason to live you can use to keep from acting on suicidal thoughts or urges.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                this.state.extraFields.map(function (i) {
+	                  return React.createElement(
+	                    'div',
+	                    { className: 'addFormField' },
+	                    React.createElement(FormsyText, { name: "reasonToLive" + (1 + i).toString(),
+	                      hintText: 'Please describe a reason to live you can use to keep from acting on suicidal thoughts or urges.',
+	                      multiLine: true, rows: 2, rowsMax: 4, fullWidth: true, hintStyle: { fontSize: '3vw' },
+	                      inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                  );
+	                }.bind(this)),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true }),
+	                  React.createElement(FlatButton, { label: 'DELETE', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', margin: '0.5vw', minWidth: '20vw', width: '20vw', textAlign: 'center' }, onTouchTap: this.handleDelete, secondary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        } else {
+	          return React.createElement(
+	            Card,
+	            { id: 'reasonsToLive', className: 'planCard' },
+	            React.createElement(CardHeader, {
+	              title: 'Reasons To Live',
+	              titleColor: Colors.grey100,
+	              titleStyle: styles.cardHeader.title,
+	              subtitle: 'Important reminders in a crisis',
+	              subtitleColor: Colors.grey100,
+	              subtitleStyle: styles.cardHeader.subtitle,
+	              actAsExpander: true,
+	              showExpandableButton: true,
+	              style: styles.cardHeader.general }),
+	            React.createElement(
+	              CardText,
+	              { color: Colors.indigo900, style: styles.cardTextForm, expandable: true },
+	              React.createElement(
+	                Form,
+	                { onSubmit: this.handleSubmit, style: styles.form },
+	                React.createElement(
+	                  'div',
+	                  { className: 'addFormField' },
+	                  React.createElement(FormsyText, { name: 'reasonToLive1',
+	                    hintText: 'Please describe a reason to live you can use to keep from acting on suicidal thoughts or urges.',
+	                    multiLine: true, rows: 2, rowsMax: 4, fullWidth: true,
+	                    textAreaStyle: { color: Colors.indigo900 },
+	                    hintStyle: { fontSize: '3vw' }, inputStyle: { fontSize: '3vw', color: Colors.indigo900 } })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'textfieldBttns' },
+	                  React.createElement(FlatButton, { label: 'ADD', labelStyle: { fontSize: '2.5vw' }, style: { flex: '1 1 auto', height: '9vw', minWidth: '15vw', width: '15vw', textAlign: 'center' }, onTouchTap: this.handleAdd, primary: true })
+	                ),
+	                React.createElement(
+	                  'div',
+	                  { className: 'formActionButtons' },
+	                  React.createElement(RaisedButton, { label: 'SUBMIT', type: 'submit', primary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle }),
+	                  React.createElement(RaisedButton, { label: 'CANCEL', onTouchTap: this.handleCancel, secondary: true, style: styles.form.formActionBttns.general, labelStyle: styles.form.formActionBttns.labelStyle })
+	                )
+	              )
+	            )
+	          );
+	        }
+	      }
+	    } else {
+	      if (this.state.dataList) {
+	        return React.createElement(
+	          Card,
+	          { id: 'reasonsToLive', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Reasons To Live',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Important reminders in a crisis',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextData, expandable: true },
+	            React.createElement(
+	              List,
+	              { style: { flex: '1 1 auto', backgroundColor: Colors.indigo50 } },
+	              this.state.dataList.map(function (i) {
+	                return React.createElement(
+	                  ListItem,
+	                  { disabled: true, leftAvatar: React.createElement(
+	                      Avatar,
+	                      { color: Colors.indigo900, backgroundColor: Colors.cyan400 },
+	                      this.state.dataList.indexOf(i) + 1
+	                    ) },
+	                  React.createElement(
+	                    'div',
+	                    { className: 'data' },
+	                    i
+	                  )
+	                );
+	              }.bind(this))
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      } else {
+	        return React.createElement(
+	          Card,
+	          { id: 'reasonsToLive', className: 'planCard' },
+	          React.createElement(CardHeader, {
+	            title: 'Reasons To Live',
+	            titleColor: Colors.grey100,
+	            titleStyle: styles.cardHeader.title,
+	            subtitle: 'Important reminders in a crisis',
+	            subtitleColor: Colors.grey100,
+	            subtitleStyle: styles.cardHeader.subtitle,
+	            actAsExpander: true,
+	            showExpandableButton: true,
+	            style: styles.cardHeader.general }),
+	          React.createElement(
+	            CardText,
+	            { color: Colors.indigo900, style: styles.cardTextNone, expandable: true },
+	            React.createElement(
+	              'div',
+	              { className: 'noData' },
+	              'No reasons to live have been saved'
+	            ),
+	            React.createElement(FlatButton, { label: 'EDIT', onTouchTap: this.toggleForm, labelStyle: styles.editLabel, style: styles.editButton, secondary: true })
+	          )
+	        );
+	      }
+	    }
+	  }
+	});
+
+	module.exports = ReasonsToLive;
+
+/***/ },
+/* 505 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+
+	var History = __webpack_require__(165).History;
+	var Link = __webpack_require__(165).Link;
+
+	var firebaseUtil = __webpack_require__(278);
+
+	var Form = __webpack_require__(380).Form;
+	var FormsyText = __webpack_require__(387);
+	var RaisedButton = __webpack_require__(399);
+
+	var SignIn = React.createClass({
+	  displayName: 'SignIn',
+
+	  mixins: [History],
+	  childContextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  contextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  getChildContext: function getChildContext() {
+	    return { muiTheme: this.context.muiTheme };
+	  },
+	  getInitialState: function getInitialState() {
+	    return {
+	      muiTheme: this.context.muiTheme,
+	      canSubmit: false,
+	      loggedIn: false,
+	      errorMessage: ""
+	    };
+	  },
+	  enableButton: function enableButton() {
+	    this.setState({
+	      canSubmit: true
+	    });
+	  },
+	  disableButton: function disableButton() {
+	    this.setState({
+	      canSubmit: false
+	    });
+	  },
+	  handleSubmitForm: function handleSubmitForm(model) {
+	    firebaseUtil.signInUser(model, function (err, result) {
+	      if (err) {
+	        this.setState({ errorMessage: err });
+	      } else if (result) {
+	        this.setState({ errorMessage: err });
+	        this.history.pushState(null, '/dashboard');
+	      }
+	    }.bind(this));
+	  },
+	  render: function render() {
+	    var styles = {
+	      form: {
+	        display: 'flex',
+	        flexDirection: 'column'
+	      },
+	      textField: {
+	        flex: '1 1 auto'
+	      },
+	      submitBttn: {
+	        flex: '1 1 auto',
+	        width: '80%',
+	        height: '10vw',
+	        margin: 'auto',
+	        marginLeft: 'auto',
+	        marginRight: 'auto',
+	        marginTop: '5vw',
+	        marginBottom: '5vw'
+	      },
+	      labelStyle: {
+	        fontSize: '4vw'
+	      }
+	    };
+	    if (this.state.errorMessage == "The specified password is incorrect.") {
+	      return React.createElement(
+	        'div',
+	        { id: 'signIn' },
+	        React.createElement(
+	          'div',
+	          { className: 'app_title' },
+	          React.createElement(
+	            'h1',
+	            null,
+	            'Mood Monitor'
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'err_mssg' },
+	          React.createElement(
+	            'span',
+	            null,
+	            this.state.errorMessage
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'formContainer' },
+	          React.createElement(
+	            Form,
+	            { onValidSubmit: this.handleSubmitForm, onValid: this.enableButton, onInvalid: this.disableButton, style: styles.form },
+	            React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
+	            React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
+	            React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit }),
+	            React.createElement(
+	              'div',
+	              { className: 'resetLink' },
+	              React.createElement(
+	                Link,
+	                { to: '/reset-password' },
+	                React.createElement(
+	                  'span',
+	                  null,
+	                  'Forgot Your Password?'
+	                )
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	    return React.createElement(
+	      'div',
+	      { id: 'signIn' },
+	      React.createElement(
+	        'div',
+	        { className: 'app_title' },
+	        React.createElement(
+	          'h1',
+	          null,
+	          'Mood Monitor'
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'err_mssg' },
+	        React.createElement(
+	          'span',
+	          null,
+	          this.state.errorMessage
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'formContainer' },
+	        React.createElement(
+	          Form,
+	          { onValidSubmit: this.handleSubmitForm, onValid: this.enableButton, onInvalid: this.disableButton, style: styles.form },
+	          React.createElement(FormsyText, { name: 'email', hintText: 'Please enter your email', floatingLabelText: 'Email', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
+	          React.createElement(FormsyText, { name: 'password', hintText: 'Please enter your password', floatingLabelText: 'Password', type: 'password', style: styles.textField, hintStyle: { fontSize: '3.5vw' }, inputStyle: { fontSize: '3.5vw' }, errorStyle: { fontSize: '2.5vw' }, fullWidth: true, required: true }),
+	          React.createElement(RaisedButton, { className: 'submitBttn', type: 'submit', label: 'Submit', labelStyle: styles.labelStyle, primary: true, style: styles.submitBttn, disabled: !this.state.canSubmit })
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = SignIn;
+
+/***/ },
+/* 506 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58371,7 +62574,42 @@
 
 	var Divider = __webpack_require__(428);
 	var Paper = __webpack_require__(416);
-	var Avatar = __webpack_require__(483);
+	var Avatar = __webpack_require__(484);
+
+	var ThemeManager = __webpack_require__(418);
+	var MyRawTheme = __webpack_require__(419);
+
+	var SuggestionsForZero = React.createClass({
+	  displayName: 'SuggestionsForZero',
+
+	  childContextTypes: {
+	    muiTheme: React.PropTypes.object
+	  },
+	  getChildContext: function getChildContext() {
+	    return { muiTheme: ThemeManager.getMuiTheme(MyRawTheme) };
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      null,
+	      'Suggestions For Zero Depression Placeholder'
+	    );
+	  }
+	});
+
+	module.exports = SuggestionsForZero;
+
+/***/ },
+/* 507 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+
+	var Divider = __webpack_require__(428);
+	var Paper = __webpack_require__(416);
+	var Avatar = __webpack_require__(484);
 
 	var ThemeManager = __webpack_require__(418);
 	var MyRawTheme = __webpack_require__(419);
@@ -58397,7 +62635,7 @@
 	module.exports = SuggestionsForMinimal;
 
 /***/ },
-/* 485 */
+/* 508 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58406,7 +62644,7 @@
 
 	var Divider = __webpack_require__(428);
 	var Paper = __webpack_require__(416);
-	var Avatar = __webpack_require__(483);
+	var Avatar = __webpack_require__(484);
 
 	var ThemeManager = __webpack_require__(418);
 	var MyRawTheme = __webpack_require__(419);
@@ -58432,7 +62670,7 @@
 	module.exports = SuggestionsForMild;
 
 /***/ },
-/* 486 */
+/* 509 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58441,7 +62679,7 @@
 
 	var Divider = __webpack_require__(428);
 	var Paper = __webpack_require__(416);
-	var Avatar = __webpack_require__(483);
+	var Avatar = __webpack_require__(484);
 
 	var ThemeManager = __webpack_require__(418);
 	var MyRawTheme = __webpack_require__(419);
@@ -58467,7 +62705,7 @@
 	module.exports = SuggestionsForModerate;
 
 /***/ },
-/* 487 */
+/* 510 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58476,7 +62714,7 @@
 
 	var Divider = __webpack_require__(428);
 	var Paper = __webpack_require__(416);
-	var Avatar = __webpack_require__(483);
+	var Avatar = __webpack_require__(484);
 
 	var ThemeManager = __webpack_require__(418);
 	var MyRawTheme = __webpack_require__(419);
@@ -58502,7 +62740,7 @@
 	module.exports = SuggestionsForModeratelySevere;
 
 /***/ },
-/* 488 */
+/* 511 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58511,7 +62749,7 @@
 
 	var Divider = __webpack_require__(428);
 	var Paper = __webpack_require__(416);
-	var Avatar = __webpack_require__(483);
+	var Avatar = __webpack_require__(484);
 
 	var ThemeManager = __webpack_require__(418);
 	var MyRawTheme = __webpack_require__(419);
@@ -58537,7 +62775,7 @@
 	module.exports = SuggestionsForSevere;
 
 /***/ },
-/* 489 */
+/* 512 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58550,11 +62788,11 @@
 
 	var firebaseUtil = __webpack_require__(278);
 
-	var CheckCircle = __webpack_require__(490);
+	var CheckCircle = __webpack_require__(513);
 	var FlatButton = __webpack_require__(423);
 	var Form = __webpack_require__(380).Form;
 	var FormsyText = __webpack_require__(387);
-	var Lock = __webpack_require__(491);
+	var Lock = __webpack_require__(514);
 	var NavBefore = __webpack_require__(430);
 	var Paper = __webpack_require__(416);
 	var RaisedButton = __webpack_require__(399);
@@ -58724,7 +62962,7 @@
 	module.exports = ResetPassword;
 
 /***/ },
-/* 490 */
+/* 513 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58765,7 +63003,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 491 */
+/* 514 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58806,7 +63044,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 492 */
+/* 515 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58845,7 +63083,7 @@
 	module.exports = TextMssgContent;
 
 /***/ },
-/* 493 */
+/* 516 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58865,7 +63103,7 @@
 	module.exports = requireAuth;
 
 /***/ },
-/* 494 */
+/* 517 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58885,7 +63123,7 @@
 	module.exports = requireSignOut;
 
 /***/ },
-/* 495 */
+/* 518 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58908,7 +63146,7 @@
 	module.exports = requireSurvey;
 
 /***/ },
-/* 496 */
+/* 519 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58930,7 +63168,7 @@
 	module.exports = requireNotAssessed;
 
 /***/ },
-/* 497 */
+/* 520 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -58947,7 +63185,24 @@
 	module.exports = retrieveThisMonthData;
 
 /***/ },
-/* 498 */
+/* 521 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var firebaseUtil = __webpack_require__(278);
+
+	function retrieveSafetyPlanData(nextState, replaceState, callback) {
+	  firebaseUtil.loadSafetyPlanData(function () {
+	    console.log("Load Safety Plan data");
+	    callback();
+	  });
+	}
+
+	module.exports = retrieveSafetyPlanData;
+
+/***/ },
+/* 522 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -59131,23 +63386,23 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
-/* 499 */
+/* 523 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var defaultClickRejectionStrategy = __webpack_require__(500);
+	var defaultClickRejectionStrategy = __webpack_require__(524);
 
 	module.exports = function injectTapEventPlugin (strategyOverrides) {
 	  strategyOverrides = strategyOverrides || {}
 	  var shouldRejectClick = strategyOverrides.shouldRejectClick || defaultClickRejectionStrategy;
 
 	  __webpack_require__(31).injection.injectEventPluginsByName({
-	    "TapEventPlugin":       __webpack_require__(501)(shouldRejectClick)
+	    "TapEventPlugin":       __webpack_require__(525)(shouldRejectClick)
 	  });
 	};
 
 
 /***/ },
-/* 500 */
+/* 524 */
 /***/ function(module, exports) {
 
 	module.exports = function(lastTouchEvent, clickTimestamp) {
@@ -59158,7 +63413,7 @@
 
 
 /***/ },
-/* 501 */
+/* 525 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59186,10 +63441,10 @@
 	var EventPluginUtils = __webpack_require__(33);
 	var EventPropagators = __webpack_require__(73);
 	var SyntheticUIEvent = __webpack_require__(87);
-	var TouchEventUtils = __webpack_require__(502);
+	var TouchEventUtils = __webpack_require__(526);
 	var ViewportMetrics = __webpack_require__(38);
 
-	var keyOf = __webpack_require__(503);
+	var keyOf = __webpack_require__(527);
 	var topLevelTypes = EventConstants.topLevelTypes;
 
 	var isStartish = EventPluginUtils.isStartish;
@@ -59335,7 +63590,7 @@
 
 
 /***/ },
-/* 502 */
+/* 526 */
 /***/ function(module, exports) {
 
 	/**
@@ -59383,7 +63638,7 @@
 
 
 /***/ },
-/* 503 */
+/* 527 */
 /***/ function(module, exports) {
 
 	/**

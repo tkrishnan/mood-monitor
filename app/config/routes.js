@@ -30,6 +30,7 @@ var requireSignOut = require('../util/signedOut.js');
 var requireSurvey = require('../util/assessed.js');
 var requireNotAssessed = require('../util/notAssessed.js');
 var retrieveThisMonthData = require('../util/getThisMonData.js');
+var retrieveSafetyPlanData = require('../util/getSafetyData.js');
 
 
 var AppRoutes = (
@@ -65,7 +66,7 @@ var AppRoutes = (
       </Route>
       <Redirect from='/assessment' to='/dashboard'/>
       <Route path='/calendar' component={CalendarContent} onEnter={retrieveThisMonthData}/>
-      <Route path='/safety-plan' component={SafetyContent}/>
+      <Route path='/safety-plan' component={SafetyContent} onEnter={retrieveSafetyPlanData}/>
       <Route path='/emergency-contacts' component={TextMssgContent}/>
     </Route>
   </Route>

@@ -6,6 +6,7 @@ var cachedUser = null;
 var dateAssessed = null;
 var assessed = null;
 var thisMonth = null;
+var safetyData = null;
 
 
 var surveyAnswers = {
@@ -233,7 +234,7 @@ var firebaseUtil = {
         }
       }, function(err) {
         console.log("The read failed: ", err);
-      }.bind(this));
+      });
     } else {
       console.log("Assessment today is: " + assessed);
       callback(assessed);
@@ -246,7 +247,7 @@ var firebaseUtil = {
       console.log("The read was successful: ", assessmentObj);
     }, function(err) {
       console.log("The read failed: ", err);
-    }.bind(this));
+    });
   },
   tempSaveAssessQuest: function(question, answer) {
     surveyAnswers[question] = answer;
@@ -274,7 +275,7 @@ var firebaseUtil = {
         dateAssessed = null;
         callback();
       }
-    }.bind(this));
+    });
   },
   retrieveMonthlyAssessmentRecord: function(startDate, endDate, callback) {
     var answer = {};
@@ -292,7 +293,7 @@ var firebaseUtil = {
       callback(answer);
     }, function(err){
       console.log("The read failed: ", err);
-    }.bind(this));
+    });
   },
   loadThisMonthlyRecord: function(callback) {
     var startDate = moment().startOf('month').format("MM-DD-YYYY");
@@ -305,11 +306,86 @@ var firebaseUtil = {
   getThisMonthlyRecord: function() {
     return thisMonth;
   },
-  saveSafetyPlanData: function() {
-    //do something here
+  saveWarningSignData: function(model) {
+    ref.child('safety_plan').child(cachedUser.uid).child('warning_signs').set(model);
   },
-  retrieveSafetyPlanData: function() {
-    //do something here
+  removeWarningSignData: function(callback) {
+    ref.child('safety_plan').child(cachedUser.uid).child('warning_signs').remove(function(err){
+      if (err) {
+        console.log("Synchronization failed.");
+      } else {
+        console.log("Synchronization sucessful.");
+        callback();
+      }
+    });
+  },
+  saveCopingStrategyData: function(model) {
+    ref.child('safety_plan').child(cachedUser.uid).child('coping_strategies').set(model);
+  },
+  removeCopingStrategyData: function(callback) {
+    ref.child('safety_plan').child(cachedUser.uid).child('coping_strategies').remove(function(err){
+      if (err) {
+        console.log("Synchronization failed.");
+      } else {
+        console.log("Synchronization successful");
+        callback();
+      }
+    });
+  },
+  saveDistractionData: function(model) {
+    ref.child('safety_plan').child(cachedUser.uid).child('distractions').set(model);
+  },
+  removeDistractionData: function(callback) {
+    ref.child('safety_plan').child(cachedUser.uid).child('distractions').remove(function(err) {
+      if (err) {
+        console.log("Synchronization failed.");
+      } else {
+        console.log("Synchronization successful.");
+        callback();
+      }
+    });
+  },
+  saveSafetyMeasureData: function(model) {
+    ref.child('safety_plan').child(cachedUser.uid).child('safety_measures').set(model);
+  },
+  removeSafetyMeasureData: function(callback) {
+    ref.child('safety_plan').child(cachedUser.uid).child('safety_measures').remove(function(err) {
+        if (err) {
+          console.log("Synchronization failed.");
+        } else {
+          console.log("Synchronization successful.");
+          callback();
+        }
+    });
+  },
+  saveReasonToLiveData: function(model) {
+    ref.child('safety_plan').child(cachedUser.uid).child('reasons_to_live').set(model);
+  },
+  removeReasonToLiveData: function(callback) {
+    ref.child('safety_plan').child(cachedUser.uid).child('reasons_to_live').remove(function(err){
+      if (err) {
+        console.log("Synchronization failed.");
+      } else {
+        console.log("Synchronization successful.");
+        callback();
+      }
+    });
+  },
+  loadSafetyPlanData: function(callback) {
+    ref.child('safety_plan').child(cachedUser.uid).once('value', function(snapshot) {
+      if (!snapshot.val()) {
+        console.log("No safety plan data saved for user");
+      } else {
+        console.log("Safety plan data found for user");
+        safetyData = snapshot.val();
+      }
+      callback();
+    }, function(err){
+      console.log("The read failed: ", err);
+    });
+  },
+  getSafetyPlanData: function() {
+    return safetyData;
   }
 };
 

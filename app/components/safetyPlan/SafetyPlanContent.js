@@ -1,14 +1,15 @@
 'use strict';
 
+require('./SafetyPlan.css');
 var React = require('react');
 
 var firebaseUtil = require('../../util/firebaseUtil.js');
 
-var Divider = require('material-ui/lib/divider');
-var Form = require('formsy-react').Form;
-var FormsyText = require('formsy-material-ui/lib/FormsyText');
-var RaisedButton = require('material-ui/lib/raised-button');
-var TextField = require('material-ui/lib/text-field');
+var WarningSigns = require('./WarningSigns.js');
+var CopingStrategies = require('./CopingStrategies.js');
+var Distractions = require('./Distractions.js');
+var SafetyMeasures = require('./SafetyMeasures.js');
+var ReasonsToLive = require('./ReasonsToLive.js');
 
 var ThemeManager = require('material-ui/lib/styles/theme-manager');
 var MyRawTheme = require('../../rawTheme.js');
@@ -21,11 +22,29 @@ var SafetyPlanContent = React.createClass({
     getChildContext: function() {
         return {muiTheme: ThemeManager.getMuiTheme(MyRawTheme)};
     },
+    getInitialState: function() {
+        return {warningSigns: null, copingStrategies: null, distractions: null, safetyMeasures: null, reasonsToLive: null };
+    },
+    componentWillMount: function() {
+        var safetyPlanData = firebaseUtil.getSafetyPlanData();
+        if (safetyPlanData) {
+            this.setState({warningSigns: safetyPlanData.warning_signs});
+            this.setState({copingStrategies: safetyPlanData.coping_strategies});
+            this.setState({distractions: safetyPlanData.distractions});
+            this.setState({safetyMeasures: safetyPlanData.safety_measures});
+            this.setState({reasonsToLive: safetyPlanData.reasons_to_live});
+        }
+    },
     render: function() {
         return (
-            <div id="safetyContent">
-                <h2>Safety Plan Page</h2>
-                <span> Hello, I am a placeholder for the safety plan page</span>
+            <div id="safetyPlanContent">
+                <div id="safetyPlan">
+                    <WarningSigns initialData={this.state.warningSigns}/>
+                    <CopingStrategies initialData={this.state.copingStrategies}/>
+                    <Distractions initialData={this.state.distractions}/>
+                    <SafetyMeasures initialData={this.state.safetyMeasures}/>
+                    <ReasonsToLive initialData={this.state.reasonsToLive}/>
+                </div>
             </div>
         );
     } 
